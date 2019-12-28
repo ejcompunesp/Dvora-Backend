@@ -1,5 +1,7 @@
 # Dvora-Backend
 
+<div style="text-align:center"><img src="./dvora-logo.png" /></div>
+
 ## O que é Dvora?
 
 O Dvora é um sistema gerenciador de Empresa Juniores, inicialmente apenas planejado para ter as funcionalidades de gerenciamento de plantões.
