@@ -1,8 +1,8 @@
 {
   "name": "dvora",
   "version": "1.0.0",
-  "description": "<div align=\"center\"><img src=\"./dvora-logo.png\" /></div>",
-  "main": "index.js",
+  "description": "",
+  "main": "./src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
