@@ -18,6 +18,11 @@
   "homepage": "https://github.com/EJComp-Unesp/Dvora-Backend#readme",
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "mysql2": "^2.1.0",
+    "sequelize": "^5.21.3"
+  },
+  "devDependencies": {
+    "sequelize-cli": "^5.5.1"
   }
 }
