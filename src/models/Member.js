@@ -14,8 +14,21 @@ class Member extends Model {
     },
       {
         sequelize: connection,
+        instanceMethods: {
+
+        }
       })
   }
+
+  static generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+  //   this.methods.generateHash = function (password) {
+  //   return bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
+  // };
+
+  static validPassword = password => bcrypt.compareSync(password, this.local.password);
+  // this.methods.validPassword = function (password) {
+  //   return bcrypt.compareSync(password, this.local.password);
+  // };
 }
 
 module.exports = Member;

@@ -4,6 +4,8 @@ const dbConfig = require('../config/database');
 
 const Member = require('../models/Member');
 
+Member.init(connection);
+
 const connection = new Sequelize(dbConfig);
 
 module.exports = connection;
