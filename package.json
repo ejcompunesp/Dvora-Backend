@@ -4,11 +4,8 @@
   "description": "",
   "main": "./src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/EJComp-Unesp/Dvora-Backend.git"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "nodemon src/server.js"
   },
   "author": "",
   "license": "ISC",
