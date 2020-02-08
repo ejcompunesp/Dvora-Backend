@@ -2,40 +2,32 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('members', {
-      ra: {
+    return queryInterface.createTable('ejs', {
+      id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
+        autoIncrement: true,
         allowNull: false,
       },
       name: {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      email: {
+      university: {
         type: Sequelize.STRING,
         allowNull: false,
-        unique: true,
-      },
-      password: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      role: {
-        type: Sequelize.STRING,
-        allowNull: true,
       },
       image: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
-      board: {
+      city: {
         type: Sequelize.STRING,
-        allowNull: true,
+        allowNull: false,
       },
-      about: {
-        type: Sequelize.STRING,
-        allowNull: true,
+      creationYear: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -49,6 +41,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('membros');
+    return queryInterface.dropTable('ejs');
   }
 };
