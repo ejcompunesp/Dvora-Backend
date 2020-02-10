@@ -1,6 +1,6 @@
 const { Model, DataTypes } = require('sequelize');
 
-class Ej extends Model {
+class Je extends Model {
   static init(connection) {
     super.init({
       name: DataTypes.STRING,
@@ -18,4 +18,4 @@ class Ej extends Model {
   // static validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 }
 
-module.exports = Ej;
+module.exports = Je;
