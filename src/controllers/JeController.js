@@ -3,12 +3,18 @@ const bcrypt = require('bcrypt');
 
 module.exports = {
   async index(req, res) {
-    try {
-      const allJe = await Je.findAll();
-      return res.json(allJe);
-    } catch (allJe) {
+    // try {
+    //   const allJe = await Je.findAll();
+    //   return res.json(allJe);
+    // } catch (error) {
+    //   return res.status(404).json(error);
+    // }
+    const allJe = await Je.findAll();
+    console.log(allJe);
+    if (allJe.length == 0)
       return res.status(404).json({ msg: 'NOT FOUND' });
-    }
+    else
+      return res.json(allJe);
   },
 
   async store(req, res) {
