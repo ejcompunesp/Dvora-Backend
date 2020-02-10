@@ -4,6 +4,8 @@ class Je extends Model {
   static init(connection) {
     super.init({
       name: DataTypes.STRING,
+      email: DataTypes.STRING,
+      password: DataTypes.STRING,
       university: DataTypes.STRING,
       image: DataTypes.STRING,
       creationYear: DataTypes.STRING,
@@ -12,10 +14,6 @@ class Je extends Model {
         sequelize: connection,
       })
   }
-
-  // static generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-
-  // static validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 }
 
 module.exports = Je;
