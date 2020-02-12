@@ -9,6 +9,7 @@ routes.get("/", (req, res) => {
 });
 
 routes.get('/jes', EjController.index);
-routes.post('/jes', EjController.store);
+routes.post('/jes/signup', EjController.store);
+routes.post('/jes/login', EjController.login);
 
 module.exports = routes;
