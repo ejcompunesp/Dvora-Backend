@@ -3,11 +3,6 @@ const bcrypt = require('bcrypt');
 
 module.exports = {
   async index(req, res) {
-    // const allJe = await Je.findAll();
-    // if (allJe.length == 0)
-    //   return res.status(404).json({ msg: 'NOT FOUND' });
-    // else
-    //   return res.json(allJe);
     try {
       const allJe = await Je.findAll();
       if (allJe.length == 0)
@@ -44,12 +39,28 @@ module.exports = {
         return res.status(200).json({ msg: 'EMAIL NOT FOUND' });
       let ok = validPassword(password, je.password);
       if (ok)
-        return res.status(200).json({ msg: 'ok' });
+        return res.status(200).json({ msg: 'OK' });
       else
-        return res.status(200).json({ msg: 'Incorrect Password' });
+        return res.status(200).json({ msg: 'INCORRECT PASSWORD' });
     } catch (error) {
       return res.status(400).json({ msg: 'ERROR' });
     }
   },
 
+  async delete(req, res) {
+    let { email, senha } = req.body;
+    const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
+    try {
+      const je = await Je.findOne({
+        where: { email },
+      });
+    } catch (error) {
+
+    }
+  },
+
+  async update(req, res) {
+    let { name, email, password, university, image, creationYear } = req.body;
+
+  },
 };
