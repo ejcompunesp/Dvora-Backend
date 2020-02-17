@@ -3,7 +3,6 @@ const EjController = require('./controllers/JeController')
 
 const routes = express.Router();
 
-//É possível modularizar mais?
 routes.get("/", (req, res) => {
   res.json({ ok: true });
 });
