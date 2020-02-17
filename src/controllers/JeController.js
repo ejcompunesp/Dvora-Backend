@@ -7,8 +7,11 @@ module.exports = {
       const allJe = await Je.findAll();
       if (allJe.length == 0)
         return res.status(200).json({ msg: 'NOT FOUND' });
-      else
+      else {
+        for (let i = 0; i < allJe.length; i++)
+          allJe[i].password = undefined;
         return res.status(200).json(allJe);
+      }
     } catch (error) {
       return res.status(400).json({ msg: 'ERROR' });
     }
