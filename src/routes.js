@@ -1,5 +1,6 @@
 const express = require("express");
-const EjController = require('./controllers/JeController');
+const JeController = require('./controllers/JeController');
+const MemberController = require('./controllers/MemberController');
 
 const routes = express.Router();
 
@@ -7,10 +8,13 @@ routes.get("/", (req, res) => {
   res.json({ ok: true });
 });
 
-routes.get('/jes', EjController.index);
-routes.post('/jes/signup', EjController.store);
-routes.post('/jes/login', EjController.login);
-routes.delete('/jes/delete', EjController.delete);
-routes.put('/jes/update', EjController.update);
+routes.get('/jes', JeController.index);
+routes.post('/jes/signup', JeController.store);
+routes.post('/jes/login', JeController.login);
+routes.delete('/jes/delete', JeController.delete);
+routes.put('/jes/update', JeController.update);
+
+routes.get('/jes/:jeId/members', MemberController.index);
+routes.post('/jes/:jeId/members/signup', MemberController.store);
 
 module.exports = routes;

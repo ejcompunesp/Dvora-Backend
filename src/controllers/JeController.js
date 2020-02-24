@@ -64,9 +64,7 @@ module.exports = {
   async delete(req, res) {
     let { id } = req.body;
     try {
-      const je = await Je.findOne({
-        where: { id }
-      });
+      const je = await Je.findByPk(id);
       if (je) {
         je.destroy();
         return res.status(200).json({ msg: 'ok' });
@@ -81,9 +79,7 @@ module.exports = {
   async update(req, res) {
     let { id, name, university, image, city, creationYear } = req.body;
     try {
-      const je = await Je.findOne({
-        where: { id }
-      });
+      const je = await Je.findByPk(id);
       if (je) {
         je.update({
           name: name,
