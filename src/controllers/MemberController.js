@@ -24,6 +24,10 @@ module.exports = {
       if (je.member.length == 0)
         return res.status(404).json({ msg: 'NO MEMBER FOUNDED' })
 
+      je.password = undefined;
+      for (let i = 0; i < je.member.length; i++)
+        je.member[i].password = undefined;
+
       return res.status(200).json(je);
 
     } catch (error) {
