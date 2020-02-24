@@ -8,6 +8,7 @@ class Je extends Model {
       password: DataTypes.STRING,
       university: DataTypes.STRING,
       image: DataTypes.STRING,
+      city: DataTypes.STRING,
       creationYear: DataTypes.STRING,
     },
       {

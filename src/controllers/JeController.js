@@ -27,12 +27,12 @@ module.exports = {
   },
 
   async store(req, res) {
-    let { name, email, password, university, image, creationYear } = req.body;
+    let { name, email, password, university, image, city, creationYear } = req.body;
 
     password = generateHash(password);
 
     try {
-      const je = await Je.create({ name, email, password, university, image, creationYear });
+      const je = await Je.create({ name, email, password, university, image, city, creationYear });
       je.password = undefined;
       return res.status(200).json({ je, token: generateToken({ id: je.id }) });
     } catch (error) {
@@ -79,7 +79,7 @@ module.exports = {
   },
 
   async update(req, res) {
-    let { id, name, university, image, creationYear } = req.body;
+    let { id, name, university, image, city, creationYear } = req.body;
     try {
       const je = await Je.findOne({
         where: { id }
@@ -89,6 +89,7 @@ module.exports = {
           name: name,
           university: university,
           image: image,
+          city: city,
           creationYear: creationYear,
         });
         return res.status(200).json({ msg: 'ok' });
