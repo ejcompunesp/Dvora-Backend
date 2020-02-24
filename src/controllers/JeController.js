@@ -62,19 +62,41 @@ module.exports = {
   },
 
   async delete(req, res) {
-    let { email, senha } = req.body;
-    const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
+    let { id } = req.body;
     try {
       const je = await Je.findOne({
-        where: { email },
+        where: { id }
       });
+      if (je) {
+        je.destroy();
+        return res.status(200).json({ msg: 'ok' });
+      }
+      else
+        return res.status(400).json({ msg: 'NOT FOUND' });
     } catch (error) {
-
+      return res.status(400).json(error);
     }
   },
 
   async update(req, res) {
-    let { name, email, password, university, image, creationYear } = req.body;
-
+    let { id, name, university, image, creationYear } = req.body;
+    try {
+      const je = await Je.findOne({
+        where: { id }
+      });
+      if (je) {
+        je.update({
+          name: name,
+          university: university,
+          image: image,
+          creationYear: creationYear,
+        });
+        return res.status(200).json({ msg: 'ok' });
+      }
+      else
+        return res.status(404).json({ msg: 'NOT FOUND' });
+    } catch (error) {
+      return res.status(400).json(error);
+    }
   },
 };

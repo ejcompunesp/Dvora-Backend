@@ -10,5 +10,7 @@ routes.get("/", (req, res) => {
 routes.get('/jes', EjController.index);
 routes.post('/jes/signup', EjController.store);
 routes.post('/jes/login', EjController.login);
+routes.delete('/jes/delete', EjController.delete);
+routes.put('/jes/update', EjController.update);
 
 module.exports = routes;
