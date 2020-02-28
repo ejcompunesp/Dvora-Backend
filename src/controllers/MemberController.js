@@ -40,14 +40,70 @@ module.exports = {
     try {
       const je = await Je.findByPk(jeId);
 
-      password = generateHash(password);
-
       if (!je)
         return res.status(400).json({ error: 'ENTERPRISE NOT FOUND' });
+
+      password = generateHash(password);
 
       const member = await Member.create({ jeId, email, password, name, board, position, sr, image });
       member.password = undefined;
       return res.status(200).json(member);
+    } catch (error) {
+      return res.status(400).json(error);
+    }
+  },
+  async login(req, res) {
+    let { email, password } = req.body;
+    try {
+      let member = await Member.findOne({
+        where: { email },
+      });
+      member = member.dataValues;
+      if (member == null)
+        return res.status(400).json({ msg: 'EMAIL NOT FOUND' });
+      let ok = validPassword(password, member.password);
+      if (!ok)
+        return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
+      else {
+        member.password = undefined;
+        return res.status(200).json({ member, token: generateToken({ id: member.id }) });
+      }
+    } catch (error) {
+      return res.status(400).json(error);
+    }
+  },
+
+  async delete(req, res) {
+    let { id } = req.body;
+    try {
+      const member = await Member.findByPk(id);
+      if (member) {
+        member.destroy();
+        return res.status(200).json({ msg: 'ok' });
+      }
+      else
+        return res.status(400).json({ msg: 'NOT FOUND' });
+    } catch (error) {
+      return res.status(400).json(error);
+    }
+  },
+
+  async update(req, res) {
+    let { id, name, board, position, sr, image } = req.body;
+    try {
+      const member = await Member.findByPk(id);
+      if (member) {
+        member.update({
+          name: name,
+          board: board,
+          position: position,
+          sr: sr,
+          image: image,
+        });
+        return res.status(200).json({ msg: 'ok' });
+      }
+      else
+        return res.status(404).json({ msg: 'NOT FOUND' });
     } catch (error) {
       return res.status(400).json(error);
     }

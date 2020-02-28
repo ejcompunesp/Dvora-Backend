@@ -1,8 +1,11 @@
 const express = require("express");
 const JeController = require('./controllers/JeController');
 const MemberController = require('./controllers/MemberController');
+const authMiddleware = require('./middlewares//auth');
 
 const routes = express.Router();
+
+routes.use(authMiddleware);
 
 routes.get("/", (req, res) => {
   res.json({ ok: true });
