@@ -55,6 +55,7 @@ module.exports = {
       return res.status(400).json(error);
     }
   },
+
   async login(req, res) {
     const { email, password } = req.body;
     try {
