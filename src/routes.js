@@ -5,17 +5,15 @@ const authMiddleware = require('./middlewares//auth');
 
 const routes = express.Router();
 
-routes.use(authMiddleware);
-
 routes.get("/", (req, res) => {
   res.json({ ok: true });
 });
 
-routes.get('/jes', JeController.index);
+routes.get('/jes', authMiddleware, JeController.index);
 routes.post('/jes/signup', JeController.store);
 routes.post('/jes/login', JeController.login);
-routes.delete('/jes/delete', JeController.delete);
-routes.put('/jes/update', JeController.update);
+routes.delete('/jes/delete', authMiddleware, JeController.delete);
+routes.put('/jes/update', authMiddleware, JeController.update);
 
 routes.get('/jes/:jeId/members', MemberController.index);
 routes.post('/jes/:jeId/members/signup', MemberController.store);
