@@ -34,6 +34,7 @@ module.exports = {
       return res.status(400).json(error);
     }
   },
+
   async store(req, res) {
     const { jeId } = req.params;
     const { email, password, name, board, position, sr, image } = req.body;
@@ -43,11 +44,13 @@ module.exports = {
       if (!je)
         return res.status(400).json({ error: 'ENTERPRISE NOT FOUND' });
 
+      je.password = undefined;
+
       hash = generateHash(password);
 
       const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image });
       member.password = undefined;
-      return res.status(200).json(member);
+      return res.status(200).json({ je, member, token: generateToken({ id: je.id }) });
     } catch (error) {
       return res.status(400).json(error);
     }
