@@ -36,16 +36,16 @@ module.exports = {
   },
   async store(req, res) {
     const { jeId } = req.params;
-    let { email, password, name, board, position, sr, image } = req.body;
+    const { email, password, name, board, position, sr, image } = req.body;
     try {
       const je = await Je.findByPk(jeId);
 
       if (!je)
         return res.status(400).json({ error: 'ENTERPRISE NOT FOUND' });
 
-      password = generateHash(password);
+      hash = generateHash(password);
 
-      const member = await Member.create({ jeId, email, password, name, board, position, sr, image });
+      const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image });
       member.password = undefined;
       return res.status(200).json(member);
     } catch (error) {
@@ -53,7 +53,7 @@ module.exports = {
     }
   },
   async login(req, res) {
-    let { email, password } = req.body;
+    const { email, password } = req.body;
     try {
       let member = await Member.findOne({
         where: { email },
@@ -74,7 +74,7 @@ module.exports = {
   },
 
   async delete(req, res) {
-    let { id } = req.body;
+    const { id } = req.body;
     try {
       const member = await Member.findByPk(id);
       if (member) {
@@ -89,7 +89,7 @@ module.exports = {
   },
 
   async update(req, res) {
-    let { id, name, board, position, sr, image } = req.body;
+    const { id, name, board, position, sr, image } = req.body;
     try {
       const member = await Member.findByPk(id);
       if (member) {
