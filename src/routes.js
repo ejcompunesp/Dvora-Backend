@@ -17,5 +17,8 @@ routes.put('/jes/update', authMiddleware, JeController.update);
 
 routes.get('/jes/:jeId/members', MemberController.index);
 routes.post('/jes/:jeId/members/signup', MemberController.store);
+routes.post('/jes/:jeId/members/login', MemberController.login);
+routes.delete('/jes/:jeId/members/delete', MemberController.delete);
+routes.put('/jes/:jeId/members/update', MemberController.update);
 
 module.exports = routes;
