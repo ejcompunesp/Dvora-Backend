@@ -13,13 +13,15 @@ const generateToken = (params = {}) => jwt.sign(params, authConfig.secret, {
 module.exports = {
   async index(req, res) {
     try {
-      const allJe = await Je.findAll();
-      if (allJe.length == 0)
+      const jes = await Je.findAll({
+        include: { association: 'member' }
+      });
+      if (jes.length == 0)
         return res.status(200).json({ msg: 'NOT FOUND' });
       else {
-        for (let i = 0; i < allJe.length; i++)
-          allJe[i].password = undefined;
-        return res.status(200).json(allJe);
+        for (let i = 0; i < jes.length; i++)
+          jes[i].password = undefined;
+        return res.status(200).json(jes);
       }
     } catch (error) {
       return res.status(400).json({ msg: 'ERROR' });

@@ -22,7 +22,7 @@ module.exports = {
         return res.status(404).json({ msg: 'ENTERPRISE NOT FOUND' })
 
       if (je.member.length == 0)
-        return res.status(404).json({ msg: 'NO MEMBER FOUNDED' })
+        return res.status(404).json({ msg: 'NO MEMBER FOUND' })
 
       je.password = undefined;
       for (let i = 0; i < je.member.length; i++)
@@ -50,7 +50,7 @@ module.exports = {
 
       const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image });
       member.password = undefined;
-      return res.status(200).json({ je, member, token: generateToken({ id: je.id }) });
+      return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
     } catch (error) {
       return res.status(400).json(error);
     }
@@ -61,6 +61,7 @@ module.exports = {
     try {
       let member = await Member.findOne({
         where: { email },
+        include: { association: 'je' },
       });
       member = member.dataValues;
       if (member == null)
@@ -70,6 +71,7 @@ module.exports = {
         return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
       else {
         member.password = undefined;
+        member.je.password = undefined;
         return res.status(200).json({ member, token: generateToken({ id: member.id }) });
       }
     } catch (error) {
