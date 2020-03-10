@@ -90,6 +90,7 @@ module.exports = {
           city: city,
           creationYear: creationYear,
         });
+        je.password = undefined;
         return res.status(200).json(je);
       }
       else

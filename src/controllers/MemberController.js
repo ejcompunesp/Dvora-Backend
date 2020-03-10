@@ -28,7 +28,10 @@ module.exports = {
       for (let i = 0; i < je.member.length; i++)
         je.member[i].password = undefined;
 
-      return res.status(200).json(je);
+      let member = je.member;
+      je.member = undefined;
+
+      return res.status(200).json({ je, member });
 
     } catch (error) {
       return res.status(400).json(error);
@@ -58,29 +61,29 @@ module.exports = {
 
   async login(req, res) {
     const { email, password } = req.body;
-    let je = await Je.findOne({
-      include: [{
-        association: 'member',
-        where: { email: email }
-      }],
-    });
-    console.log(je.dataValues.member[0].dataValues);
     try {
-      let member = await Member.findOne({
-        where: { email },
-        include: { association: 'je' },
+      let je = await Je.findOne({
+        include: [{
+          association: 'member',
+          where: { email: email }
+        }],
       });
-      member = member.dataValues;
+
+      je = je.dataValues;
+      member = je.member[0].dataValues;
+      je.member = undefined;
+
       if (member == null)
         return res.status(400).json({ msg: 'EMAIL NOT FOUND' });
       let ok = validPassword(password, member.password);
       if (!ok)
         return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
-      else {
-        member.password = undefined;
-        member.je.password = undefined;
-        return res.status(200).json({ member, token: generateToken({ id: member.id }) });
-      }
+
+      member.password = undefined;
+      je.password = undefined;
+
+      return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
+
     } catch (error) {
       return res.status(400).json(error);
     }
@@ -113,7 +116,8 @@ module.exports = {
           sr: sr,
           image: image,
         });
-        return res.status(200).json({ msg: 'ok' });
+        member.password = undefined;
+        return res.status(200).json(member);
       }
       else
         return res.status(404).json({ msg: 'NOT FOUND' });
