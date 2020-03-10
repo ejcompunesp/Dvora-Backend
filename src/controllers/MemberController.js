@@ -58,6 +58,13 @@ module.exports = {
 
   async login(req, res) {
     const { email, password } = req.body;
+    let je = await Je.findOne({
+      include: [{
+        association: 'member',
+        where: { email: email }
+      }],
+    });
+    console.log(je.dataValues.member[0].dataValues);
     try {
       let member = await Member.findOne({
         where: { email },

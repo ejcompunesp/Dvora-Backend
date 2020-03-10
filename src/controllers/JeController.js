@@ -90,7 +90,7 @@ module.exports = {
           city: city,
           creationYear: creationYear,
         });
-        return res.status(200).json({ msg: 'ok' });
+        return res.status(200).json(je);
       }
       else
         return res.status(404).json({ msg: 'NOT FOUND' });
