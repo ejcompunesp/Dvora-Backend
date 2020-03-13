@@ -28,7 +28,9 @@ module.exports = {
       for (let i = 0; i < je.member.length; i++)
         je.member[i].password = undefined;
 
-      return res.status(200).json(je);
+      let members = je.member;
+      je.member = undefined;
+      return res.status(200).json(je, members);
 
     } catch (error) {
       return res.status(400).json(error);

@@ -17,6 +17,7 @@ class Member extends Model {
   }
   static associate(models) {
     this.belongsTo(models.Je, { foreignKey: 'jeId', as: 'je' });
+    this.belongsToMany(models.Duty, { foreignKey: 'dutyId', through: 'memberDuties', as: 'duties' });
   }
 }
 
