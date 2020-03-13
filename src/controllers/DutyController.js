@@ -18,21 +18,18 @@ module.exports = {
   },
 
   async store(req, res) {
-    const { jeId } = req.params;
-    const { email, password, name, board, position, sr, image } = req.body;
+    const { memberId } = req.params;
+    const { createdAt } = req.body;
     try {
-      const je = await Je.findByPk(jeId);
+      const member = Member.findByPk(memberId);
 
-      if (!je)
-        return res.status(400).json({ error: 'ENTERPRISE NOT FOUND' });
+      const [duty] = await Duty.findOrCreate({
+        where: { createdAt },
+      });
 
-      je.password = undefined;
+      await member.addDuty(duty);
 
-      hash = generateHash(password);
-
-      const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image });
-      member.password = undefined;
-      return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
+      return res.status(200).json(duty);
     } catch (error) {
       return res.status(400).json(error);
     }

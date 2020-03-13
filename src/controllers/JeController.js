@@ -19,8 +19,10 @@ module.exports = {
       if (jes.length == 0)
         return res.status(200).json({ msg: 'NOT FOUND' });
       else {
-        for (let i = 0; i < jes.length; i++)
+        for (let i = 0; i < jes.length; i++) {
           jes[i].password = undefined;
+          jes[i].member = undefined;
+        }
         return res.status(200).json(jes);
       }
     } catch (error) {

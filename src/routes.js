@@ -16,13 +16,13 @@ routes.post('/jes/login', JeController.login);
 routes.delete('/jes/delete', authMiddleware, JeController.delete);
 routes.put('/jes/update', authMiddleware, JeController.update);
 
-routes.get('/jes/:jeId/members', MemberController.index);
+routes.get('/jes/:jeId/members', authMiddleware, MemberController.index);
 routes.post('/jes/:jeId/members/signup', MemberController.store);
 routes.post('/members/login', MemberController.login);
 routes.delete('/jes/:jeId/members/delete', MemberController.delete);
 routes.put('/jes/:jeId/members/update', MemberController.update);
 
-// routes.get('/members/:memberId/duties', DutyController.index);
-// routes.post('/members/:memberId/duties/create', DutyController.store);
+routes.get('/members/:memberId/duties', DutyController.index);
+routes.post('/members/:memberId/duties/create', DutyController.store);
 
 module.exports = routes;
