@@ -6,10 +6,15 @@ module.exports = {
     const { memberId } = req.params
     const { dutyId } = req.body;
     try {
-      const member = Member.findByPk(memberId, {
-        include: { association: 'duty' },
+      const member = await Member.findByPk(memberId, {
+        include: { association: 'duties' },
       });
+
+      if (!member)
+        return res.status(404).json({ msg: 'MEMBER NOT FOUND' })
+
       member.password = undefined;
+
       return res.status(200).json(member);
     } catch (error) {
       return res.status(400).json(error)
@@ -27,11 +32,9 @@ module.exports = {
         defaults: { status: 'InProgress' }
       });
 
-      console.log(duty);
-
       await member.addDuty(duty);
-
-      return res.status(200).json(duty);
+      member.password = undefined;
+      return res.status(200).json({ member, duty });
     } catch (error) {
       return res.status(400).json(error);
     }
