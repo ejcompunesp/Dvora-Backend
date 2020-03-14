@@ -1,6 +1,5 @@
 const Duty = require('../models/Duty');
 const Member = require('../models/Member');
-const Je = require('../models/Je');
 
 module.exports = {
   async index(req, res) {
@@ -21,11 +20,14 @@ module.exports = {
     const { memberId } = req.params;
     const { createdAt } = req.body;
     try {
-      const member = Member.findByPk(memberId);
+      const member = await Member.findByPk(memberId);
 
       const [duty] = await Duty.findOrCreate({
         where: { createdAt },
+        defaults: { status: 'InProgress' }
       });
+
+      console.log(duty);
 
       await member.addDuty(duty);
 

@@ -4,7 +4,7 @@ class Duty extends Model {
   static init(connection) {
     super.init({
       status: DataTypes.STRING,
-      completedAt: DataTypes.DATE,
+      fineshedAt: DataTypes.DATE,
     },
       {
         sequelize: connection,
