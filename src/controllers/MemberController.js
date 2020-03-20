@@ -25,11 +25,10 @@ module.exports = {
         return res.status(404).json({ msg: 'NO MEMBER FOUND' })
 
       je.password = undefined;
-      for (let i = 0; i < je.member.length; i++)
-        je.member[i].password = undefined;
-
       let member = je.member;
-      je.member = undefined;
+      je.dataValues.member = undefined;
+      for (let i = 0; i < member.length; i++)
+        member[i].password = undefined;
 
       return res.status(200).json({ je, member });
 
