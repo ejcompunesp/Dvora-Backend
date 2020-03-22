@@ -19,12 +19,15 @@ module.exports = {
       if (jes.length == 0)
         return res.status(200).json({ msg: 'NOT FOUND' });
       else {
-        for (let i = 0; i < jes.length; i++)
+        for (let i = 0; i < jes.length; i++) {
           jes[i].password = undefined;
+          for (let j = 0; j < jes[i].member.length; j++)
+            jes[i].member[j].password = undefined;
+        }
         return res.status(200).json(jes);
       }
     } catch (error) {
-      return res.status(400).json({ msg: 'ERROR' });
+      return res.status(400).json(error);
     }
   },
 
@@ -90,7 +93,8 @@ module.exports = {
           city: city,
           creationYear: creationYear,
         });
-        return res.status(200).json({ msg: 'ok' });
+        je.password = undefined;
+        return res.status(200).json(je);
       }
       else
         return res.status(404).json({ msg: 'NOT FOUND' });
