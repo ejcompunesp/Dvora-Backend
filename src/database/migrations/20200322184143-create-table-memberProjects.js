@@ -2,27 +2,26 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('projects', {
+    return queryInterface.createTable('memberProjects', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
       },
-      // memberId: {
-      //   type: Sequelize.INTEGER,
-      //   allowNull: false,
-      //   references: { model: 'member', key: 'id' },
-      //   onUpdate: 'CASCADE',
-      //   onDelete: 'CASCADE',
-      // },
-      name: {
-        type: Sequelize.STRING,
+      memberId: {
+        type: Sequelize.INTEGER,
+        references: { model: 'members', key: 'id' },
         allowNull: false,
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
-      details: {
-        type: Sequelize.TEXT,
-        allowNull: true,
+      projectId: {
+        type: Sequelize.INTEGER,
+        references: { model: 'projects', key: 'id' },
+        allowNull: false,
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -36,6 +35,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('projects');
+    return queryInterface.dropTable('memberProjects');
   }
 };
