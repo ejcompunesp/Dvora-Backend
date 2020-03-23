@@ -9,13 +9,13 @@ module.exports = {
         autoIncrement: true,
         allowNull: false,
       },
-      // memberId: {
-      //   type: Sequelize.INTEGER,
-      //   allowNull: false,
-      //   references: { model: 'member', key: 'id' },
-      //   onUpdate: 'CASCADE',
-      //   onDelete: 'CASCADE',
-      // },
+      jeId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { model: 'jes', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
       name: {
         type: Sequelize.STRING,
         allowNull: false,

@@ -17,6 +17,7 @@ class Je extends Model {
   }
   static associate(models) {
     this.hasMany(models.Member, { foreignKey: 'jeId', as: 'member' });
+    this.hasMany(models.Project, { foreignKey: 'jeId', as: 'project' });
   }
 }
 
