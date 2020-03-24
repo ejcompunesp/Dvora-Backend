@@ -24,6 +24,18 @@ module.exports = {
         type: Sequelize.TEXT,
         allowNull: true,
       },
+      value: {
+        type: Sequelize.FLOAT,
+        allowNull: true,
+      },
+      startDate: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+      deliveryDate: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,

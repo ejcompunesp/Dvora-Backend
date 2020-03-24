@@ -5,6 +5,9 @@ class Project extends Model {
     super.init({
       name: DataTypes.STRING,
       details: DataTypes.TEXT,
+      value: DataTypes.FLOAT,
+      startDate: DataTypes.DATE,
+      deliveryDate: DataTypes.DATE,
     },
       {
         sequelize: connection,
