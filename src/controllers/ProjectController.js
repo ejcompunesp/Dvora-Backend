@@ -41,6 +41,39 @@ module.exports = {
     }
   },
 
+  async update(req, res) {
+    const { name, details, value, startDate, deliveryDate } = req.body;
+    const { jeId, projectId } = req.params;
+    try {
+      const project = await Project.findByPk(projectId);
+      if (!project)
+        return res.status(404).json({ msg: 'PROJECT NOT FOUND' });
+      await project.update({
+        name: name,
+        details: details,
+        value: value,
+        startDate: startDate,
+        deliveryDate: deliveryDate,
+      });
+      return res.status(200).json(project);
+    } catch (error) {
+      return res.status(400).json(error);
+    }
+  },
+
+  async delete(req, res) {
+    const { projectId } = req.params;
+    try {
+      const project = await Project.findByPk(projectId);
+      if (!project)
+        return res.status(404).json({ msg: 'PROJECT NOT FOUND' });
+      project.destroy();
+      return res.status(200).json({ msg: 'OK' });
+    } catch (error) {
+      return res.status(400).json(error);
+    }
+  },
+
   async addMember(req, res) {
     const { jeId, projectId } = req.params;
     const { memberId } = req.body;

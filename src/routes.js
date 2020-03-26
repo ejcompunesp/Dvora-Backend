@@ -19,11 +19,13 @@ routes.put('/jes/update', authMiddleware, JeController.update);
 routes.get('/jes/:jeId/members', MemberController.index);
 routes.post('/jes/:jeId/members/signup', MemberController.store);
 routes.post('/members/login', MemberController.login);
-routes.delete('/jes/:jeId/members/delete', MemberController.delete);
-routes.put('/jes/:jeId/members/update', MemberController.update);
+routes.delete('/jes/:jeId/members/delete', authMiddleware, MemberController.delete);
+routes.put('/jes/:jeId/members/update', authMiddleware, MemberController.update);
 
 routes.get('/jes/:jeId/projects', ProjectController.index);
 routes.post('/jes/:jeId/projects/create', ProjectController.store);
 routes.post('/jes/:jeId/projects/:projectId', ProjectController.addMember);
+routes.delete('/jes/:jeId/projects/:projectId/delete', ProjectController.delete);
+routes.put('/jes/:jeId/projects/:projectId/update', ProjectController.update);
 
 module.exports = routes;
