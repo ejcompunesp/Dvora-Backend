@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 
 const generateToken = (params = {}) => jwt.sign(params, authConfig.secret, {
   expiresIn: 86400, //um dia
@@ -53,36 +52,6 @@ module.exports = {
       const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image });
       member.password = undefined;
       return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
-    } catch (error) {
-      return res.status(400).json(error);
-    }
-  },
-
-  async login(req, res) {
-    const { email, password } = req.body;
-    try {
-      let je = await Je.findOne({
-        include: [{
-          association: 'member',
-          where: { email: email }
-        }],
-      });
-
-      je = je.dataValues;
-      member = je.member[0].dataValues;
-      je.member = undefined;
-
-      if (member == null)
-        return res.status(400).json({ msg: 'EMAIL NOT FOUND' });
-      let ok = validPassword(password, member.password);
-      if (!ok)
-        return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
-
-      member.password = undefined;
-      je.password = undefined;
-
-      return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
-
     } catch (error) {
       return res.status(400).json(error);
     }
