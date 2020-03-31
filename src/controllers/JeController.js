@@ -13,9 +13,7 @@ const generateToken = (params = {}) => jwt.sign(params, authConfig.secret, {
 module.exports = {
   async index(req, res) {
     try {
-      const jes = await Je.findAll({
-        include: { association: 'member' }
-      });
+      const jes = await Je.findAll();
       if (jes.length == 0)
         return res.status(200).json({ msg: 'NOT FOUND' });
       else {

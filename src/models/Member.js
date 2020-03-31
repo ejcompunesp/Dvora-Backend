@@ -12,12 +12,12 @@ class Member extends Model {
       image: DataTypes.STRING,
     },
       {
-        sequelize: connection,
+        sequelize: connection
       })
   }
   static associate(models) {
-    this.belongsTo(models.Je, { foreignKey: 'jeId', as: 'je' });
-    this.belongsToMany(models.Duty, { foreignKey: 'memberId', through: 'memberDuties', as: 'duties' });
+    this.belongsTo(models.Je, { foreignKey: 'jeId', as: 'jes' });
+    this.hasMany(models.Duty, { foreignKey: 'memberId', as: 'duties' });
   }
 }
 

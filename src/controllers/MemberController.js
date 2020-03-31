@@ -15,22 +15,23 @@ module.exports = {
   async index(req, res) {
     const { jeId } = req.params;
     try {
-      const je = await Je.findByPk(jeId, {
-        include: { association: 'member' },
-      });
+      const je = await Je.findByPk(jeId);
       if (!je)
         return res.status(404).json({ msg: 'ENTERPRISE NOT FOUND' })
 
-      if (je.member.length == 0)
+      const members =  await Member.findAll({
+        where: { jeId }
+      })
+      if (members.length == 0)
         return res.status(404).json({ msg: 'NO MEMBER FOUND' })
 
       je.password = undefined;
-      for (let i = 0; i < je.member.length; i++)
-        je.member[i].password = undefined;
-
-      let members = je.member;
-      je.member = undefined;
-      return res.status(200).json({ je, members });
+      for (let i = 0; i < members.length; i++)
+        members[i].password = undefined;
+        
+      console.log(members)
+      //je.member = undefined;
+      return res.status(200).json( { je, members });
 
     } catch (error) {
       return res.status(400).json(error);

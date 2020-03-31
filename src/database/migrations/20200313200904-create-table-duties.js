@@ -2,20 +2,23 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('duties', {
+    return queryInterface.createTable('Duties', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
       },
+      memberId: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { model: 'Members', key: 'id' },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
       status: {
         type: Sequelize.STRING,
         allowNull: false,
-      },
-      finishedAt: {
-        type: Sequelize.DATE,
-        allowNull: true,
       },
       createdAt: {
         type: Sequelize.DATE,
@@ -29,6 +32,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('duties');
+    return queryInterface.dropTable('Duties');
   }
 };
