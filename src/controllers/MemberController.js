@@ -73,7 +73,7 @@ module.exports = {
   },
 
   async update(req, res) {
-    const { id, name, board, position, sr, image } = req.body;
+    const { id, password, name, board, position, sr, image } = req.body;
     try {
       const member = await Member.findByPk(id);
       if (member) {

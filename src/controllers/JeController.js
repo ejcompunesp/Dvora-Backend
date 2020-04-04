@@ -60,7 +60,7 @@ module.exports = {
   },
 
   async update(req, res) {
-    const { id, name, university, image, city, creationYear } = req.body;
+    const { id, password, name, university, image, city, creationYear } = req.body;
     try {
       const je = await Je.findByPk(id);
       if (je) {
