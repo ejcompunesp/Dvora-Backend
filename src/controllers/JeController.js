@@ -66,6 +66,7 @@ module.exports = {
       if (je) {
         je.update({
           name: name,
+          password: password,
           university: university,
           image: image,
           city: city,

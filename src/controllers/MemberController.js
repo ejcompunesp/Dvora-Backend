@@ -79,6 +79,7 @@ module.exports = {
       if (member) {
         member.update({
           name: name,
+          password: password,
           board: board,
           position: position,
           sr: sr,
