@@ -5,7 +5,7 @@ const authConfig = require('../config/auth');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 
-const generateToken = (params = {}) => jwt.sign(params, authConfig.secret, {
+const generateToken = (params = {}) => jwt.sign(params, authConfig.secretJe, {
   expiresIn: 86400, //um dia
 });
 
@@ -40,7 +40,7 @@ module.exports = {
       je.password = undefined;
       return res.status(200).json({ je, token: generateToken({ id: je.id }) });
     } catch (error) {
-      return res.status(400).json({ msg: 'ERROR' });
+      return res.status(400).json(error);
     }
   },
 

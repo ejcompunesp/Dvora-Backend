@@ -6,7 +6,7 @@ const authConfig = require('../config/auth');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 
-const generateToken = (params = {}) => jwt.sign(params, authConfig.secret, {
+const generateToken = (params = {}) => jwt.sign(params, authConfig.secretMember, {
   expiresIn: 86400, //um dia
 });
 

@@ -7,7 +7,11 @@ const authConfig = require('../config/auth');
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 
-const generateToken = (params = {}) => jwt.sign(params, authConfig.secret, {
+const generateTokenMember = (params = {}) => jwt.sign(params, authConfig.secretMember, {
+  expiresIn: 86400, //um dia
+});
+
+const generateTokenJe = (params = {}) => jwt.sign(params, authConfig.secretJe, {
   expiresIn: 86400, //um dia
 });
 
@@ -23,7 +27,7 @@ module.exports = {
           return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
         else {
           je.password = undefined;
-          return res.status(200).json({ je, token: generateToken({ id: je.id }) });
+          return res.status(200).json({ je, token: generateTokenJe({ id: je.id }) });
         }
       }
       else {
@@ -44,7 +48,7 @@ module.exports = {
         member.password = undefined;
         je.password = undefined;
 
-        return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
+        return res.status(200).json({ je, member, token: generateTokenMember({ id: member.id }) });
       }
     } catch (error) {
       return res.status(400).json(error);
