@@ -17,8 +17,12 @@ module.exports = {
         onDelete: 'CASCADE',
       },
       status: {
-        type: Sequelize.STRING,
+        type: Sequelize.INTEGER,
         allowNull: false,
+      },
+      elapsedTime: {
+        type: Sequelize.INTEGER,
+        allowNull: false
       },
       createdAt: {
         type: Sequelize.DATE,

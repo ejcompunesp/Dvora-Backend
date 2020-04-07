@@ -22,9 +22,8 @@ routes.post('/members/login', MemberController.login);
 routes.delete('/jes/:jeId/members/delete', authMiddleware, MemberController.delete);
 routes.put('/jes/:jeId/members/update', authMiddleware, MemberController.update);
 
-routes.get('/members/:memberId/duties', DutyController.index);
-routes.post('/members/:memberId/duties/register', DutyController.store);
-//routes.delete('/jes/:jeId/members/duties/delete', authMiddleware, MemberController.delete);
-routes.put('/members/:memberId/duties/finish', DutyController.update);
+routes.get('/duties/:memberId', DutyController.index);
+routes.post('/duties/register', DutyController.store);
+routes.put('/duties/:dutyId/finish', DutyController.update);
 
 module.exports = routes;
