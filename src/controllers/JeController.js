@@ -34,15 +34,12 @@ module.exports = {
 
   async store(req, res) {
     const { name, email, password, university, city, creationYear } = req.body;
-    const { key, url } = req.file;
+    const { key } = req.file;
 
     const hash = generateHash(password);
 
-    if (!url)
-      var link = `http://localhost:3000/files/${key}`;
-
     try {
-      const je = await Je.create({ name, email, password: hash, university, image: url || link, city, creationYear });
+      const je = await Je.create({ name, email, password: hash, university, image: key, city, creationYear });
       je.password = undefined;
       return res.status(200).json({ je, token: generateToken({ id: je.id }) });
     } catch (error) {

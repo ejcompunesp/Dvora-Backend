@@ -1,6 +1,6 @@
 # Dvora-Backend
 
-<div align="center"><img src="./assets/images/dvora-logo.png" /></div>
+<div align="center"><img src="./public/assets/images/dvora-logo.png" /></div>
 
 ## O que é Dvora?
 
