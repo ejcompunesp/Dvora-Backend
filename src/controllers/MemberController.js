@@ -39,7 +39,8 @@ module.exports = {
 
   async store(req, res) {
     const { jeId } = req.params;
-    const { email, password, name, board, position, sr, image, dutyDate, dutyTime } = req.body;
+    const { email, password, name, board, position, sr, dutyDate, dutyTime } = req.body;
+    const { key } = req.file;
     try {
       const je = await Je.findByPk(jeId);
 
@@ -50,7 +51,7 @@ module.exports = {
 
       hash = generateHash(password);
 
-      const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image, dutyDate, dutyTime });
+      const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image: key, dutyDate, dutyTime });
       member.password = undefined;
       return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
     } catch (error) {
@@ -93,6 +94,7 @@ module.exports = {
     try {
       const member = await Member.findByPk(id);
       if (member) {
+        promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', member.image));
         member.destroy();
         return res.status(200).json({ msg: 'ok' });
       }
@@ -104,16 +106,19 @@ module.exports = {
   },
 
   async update(req, res) {
-    const { id, name, board, position, sr, image, dutyDate, dutyTime } = req.body;
+    const { id, name, board, position, sr, dutyDate, dutyTime } = req.body;
+    const { key } = req.file;
     try {
       const member = await Member.findByPk(id);
       if (member) {
+        if (key)
+          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', member.image));
         member.update({
           name: name,
           board: board,
           position: position,
           sr: sr,
-          image: image,
+          image: key,
           dutyDate: dutyDate,
           dutyTime: dutyTime,
         });
