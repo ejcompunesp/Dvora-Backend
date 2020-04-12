@@ -1,5 +1,6 @@
 const Je = require('../models/Je');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
 
@@ -17,7 +18,7 @@ module.exports = {
         include: { association: 'member' }
       });
       if (jes.length == 0)
-        return res.status(200).json({ msg: 'NOT FOUND' });
+        return res.status(404).json({ msg: 'NOT FOUND' });
       else {
         for (let i = 0; i < jes.length; i++) {
           jes[i].password = undefined;
@@ -57,7 +58,7 @@ module.exports = {
       });
       je = je.dataValues;
       if (je == null)
-        return res.status(400).json({ msg: 'EMAIL NOT FOUND' });
+        return res.status(404).json({ msg: 'EMAIL NOT FOUND' });
       let ok = validPassword(password, je.password);
       if (!ok)
         return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
@@ -75,11 +76,12 @@ module.exports = {
     try {
       const je = await Je.findByPk(id);
       if (je) {
+
         je.destroy();
         return res.status(200).json({ msg: 'ok' });
       }
       else
-        return res.status(400).json({ msg: 'NOT FOUND' });
+        return res.status(404).json({ msg: 'NOT FOUND' });
     } catch (error) {
       return res.status(400).json(error);
     }

@@ -24,19 +24,19 @@ module.exports = {
       },
       university: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       image: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       city: {
         type: Sequelize.STRING,
-        allowNull: false,
+        allowNull: true,
       },
       creationYear: {
         type: Sequelize.INTEGER,
-        allowNull: false,
+        allowNull: true,
       },
       createdAt: {
         type: Sequelize.DATE,
