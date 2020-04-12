@@ -4,9 +4,8 @@ const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 
-const generateToken = (params = {}) => jwt.sign(params, authConfig.secret, {
+const generateToken = (params = {}) => jwt.sign(params, authConfig.secretJe, {
   expiresIn: 86400, //um dia
 });
 
@@ -41,27 +40,6 @@ module.exports = {
       je.password = undefined;
       return res.status(200).json({ je, token: generateToken({ id: je.id }) });
     } catch (error) {
-      return res.status(400).json({ msg: 'ERROR' });
-    }
-  },
-
-  async login(req, res) {
-    const { email, password } = req.body;
-    try {
-      let je = await Je.findOne({
-        where: { email },
-      });
-      je = je.dataValues;
-      if (je == null)
-        return res.status(400).json({ msg: 'EMAIL NOT FOUND' });
-      let ok = validPassword(password, je.password);
-      if (!ok)
-        return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
-      else {
-        je.password = undefined;
-        return res.status(200).json({ je, token: generateToken({ id: je.id }) });
-      }
-    } catch (error) {
       return res.status(400).json(error);
     }
   },
@@ -82,12 +60,13 @@ module.exports = {
   },
 
   async update(req, res) {
-    const { id, name, university, image, city, creationYear } = req.body;
+    const { id, password, name, university, image, city, creationYear } = req.body;
     try {
       const je = await Je.findByPk(id);
       if (je) {
         je.update({
           name: name,
+          password: password,
           university: university,
           image: image,
           city: city,

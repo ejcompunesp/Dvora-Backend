@@ -5,9 +5,8 @@ const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 
-const generateToken = (params = {}) => jwt.sign(params, authConfig.secret, {
+const generateToken = (params = {}) => jwt.sign(params, authConfig.secretMember, {
   expiresIn: 86400, //um dia
 });
 
@@ -58,36 +57,6 @@ module.exports = {
     }
   },
 
-  async login(req, res) {
-    const { email, password } = req.body;
-    try {
-      let je = await Je.findOne({
-        include: [{
-          association: 'member',
-          where: { email: email }
-        }],
-      });
-
-      je = je.dataValues;
-      member = je.member[0].dataValues;
-      je.member = undefined;
-
-      if (member == null)
-        return res.status(400).json({ msg: 'EMAIL NOT FOUND' });
-      let ok = validPassword(password, member.password);
-      if (!ok)
-        return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
-
-      member.password = undefined;
-      je.password = undefined;
-
-      return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
-
-    } catch (error) {
-      return res.status(400).json(error);
-    }
-  },
-
   async delete(req, res) {
     const { id } = req.body;
     try {
@@ -104,12 +73,13 @@ module.exports = {
   },
 
   async update(req, res) {
-    const { id, name, board, position, sr, image, dutyDate, dutyTime } = req.body;
+    const { id, name, board, password, position, sr, image, dutyDate, dutyTime } = req.body;
     try {
       const member = await Member.findByPk(id);
       if (member) {
         member.update({
           name: name,
+          password: password,
           board: board,
           position: position,
           sr: sr,
