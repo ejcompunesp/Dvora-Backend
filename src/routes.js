@@ -1,7 +1,10 @@
 const express = require("express");
+const multer = require("multer");
+
 const JeController = require('./controllers/JeController');
 const MemberController = require('./controllers/MemberController');
-const authMiddleware = require('./middlewares//auth');
+const authMiddleware = require('./middlewares/auth');
+const multerMiddleware = require('./middlewares/multer');
 
 const routes = express.Router();
 
@@ -9,8 +12,8 @@ routes.get("/", (req, res) => {
   res.json({ ok: true });
 });
 
-routes.get('/jes', authMiddleware, JeController.index);
-routes.post('/jes/signup', JeController.store);
+routes.get('/jes', JeController.index);
+routes.post('/jes/signup', multer(multerMiddleware).single('file'), JeController.store);
 routes.post('/jes/login', JeController.login);
 routes.delete('/jes/delete', authMiddleware, JeController.delete);
 routes.put('/jes/update', authMiddleware, JeController.update);

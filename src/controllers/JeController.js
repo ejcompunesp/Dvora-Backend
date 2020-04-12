@@ -32,12 +32,16 @@ module.exports = {
   },
 
   async store(req, res) {
-    const { name, email, password, university, image, city, creationYear } = req.body;
+    const { name, email, password, university, city, creationYear } = req.body;
+    const { key, url } = req.file;
 
-    hash = generateHash(password);
+    const hash = generateHash(password);
+
+    if (!url)
+      var link = `http://localhost:3000/files/${key}`;
 
     try {
-      const je = await Je.create({ name, email, password: hash, university, image, city, creationYear });
+      const je = await Je.create({ name, email, password: hash, university, image: url || link, city, creationYear });
       je.password = undefined;
       return res.status(200).json({ je, token: generateToken({ id: je.id }) });
     } catch (error) {
