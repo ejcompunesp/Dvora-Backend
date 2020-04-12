@@ -38,7 +38,7 @@ module.exports = {
 
   async store(req, res) {
     const { jeId } = req.params;
-    const { email, password, name, board, position, sr, image } = req.body;
+    const { email, password, name, board, position, sr, image, dutyDate, dutyTime } = req.body;
     try {
       const je = await Je.findByPk(jeId);
 
@@ -49,7 +49,7 @@ module.exports = {
 
       hash = generateHash(password);
 
-      const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image });
+      const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image, dutyDate, dutyTime });
       member.password = undefined;
       return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
     } catch (error) {
@@ -73,7 +73,7 @@ module.exports = {
   },
 
   async update(req, res) {
-    const { id, password, name, board, position, sr, image } = req.body;
+    const { id, name, board, password, position, sr, image, dutyDate, dutyTime } = req.body;
     try {
       const member = await Member.findByPk(id);
       if (member) {
@@ -84,6 +84,8 @@ module.exports = {
           position: position,
           sr: sr,
           image: image,
+          dutyDate: dutyDate,
+          dutyTime: dutyTime,
         });
         member.password = undefined;
         return res.status(200).json(member);
