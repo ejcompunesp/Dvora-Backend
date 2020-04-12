@@ -1,8 +1,11 @@
 const Je = require('../models/Je');
 const bcrypt = require('bcrypt');
 const fs = require('fs');
+const path = require('path');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
+
+const { promisify } = require('util');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
@@ -73,7 +76,7 @@ module.exports = {
     try {
       const je = await Je.findByPk(id);
       if (je) {
-
+        promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
         je.destroy();
         return res.status(200).json({ msg: 'ok' });
       }
@@ -85,17 +88,30 @@ module.exports = {
   },
 
   async update(req, res) {
-    const { id, name, university, image, city, creationYear } = req.body;
+    const { id, name, university, city, creationYear } = req.body;
+    const { key } = req.file;
     try {
+
       const je = await Je.findByPk(id);
       if (je) {
-        je.update({
-          name: name,
-          university: university,
-          image: image,
-          city: city,
-          creationYear: creationYear,
-        });
+        if (key) {
+          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
+          je.update({
+            name: name,
+            university: university,
+            image: key,
+            city: city,
+            creationYear: creationYear,
+          });
+        }
+        else {
+          je.update({
+            name: name,
+            university: university,
+            city: city,
+            creationYear: creationYear,
+          });
+        }
         je.password = undefined;
         return res.status(200).json(je);
       }

@@ -16,7 +16,7 @@ routes.get('/jes', JeController.index);
 routes.post('/jes/signup', multer(multerMiddleware).single('file'), JeController.store);
 routes.post('/jes/login', JeController.login);
 routes.delete('/jes/delete', authMiddleware, JeController.delete);
-routes.put('/jes/update', authMiddleware, JeController.update);
+routes.put('/jes/update', authMiddleware, multer(multerMiddleware).single('file'), JeController.update);
 
 routes.get('/jes/:jeId/members', MemberController.index);
 routes.post('/jes/:jeId/members/signup', MemberController.store);

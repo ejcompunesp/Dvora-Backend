@@ -6,10 +6,15 @@ const crypto = require('crypto');
 
 // require('dotenv').config();
 
+var dir;
 const storageTypes = {
   local: multer.diskStorage({
     destination: (req, file, cb) => {
-      cb(null, path.resolve(__dirname, '..', '..', 'assets', 'images'));
+      if ('member'.includes(req.originalUrl))
+        dir = path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member');
+      else
+        dir = path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je');
+      cb(null, dir);
     },
     filename: (req, file, cb) => {
       crypto.randomBytes(16, (err, hash) => {
@@ -40,9 +45,9 @@ const storageTypes = {
 }
 
 module.exports = {
-  dest: path.resolve(__dirname, '..', '..', 'assets', 'images'),
   // storage: storageTypes[process.env.STORAGE_TYPE],
   storage: storageTypes.local,
+  dest: dir,
   limits: {
     fileSize: 2 * 1024 * 1024,
   },
