@@ -89,26 +89,48 @@ module.exports = {
 
   async update(req, res) {
     const { id, name, university, city, creationYear } = req.body;
-    const { key } = req.file;
-    try {
-      const je = await Je.findByPk(id);
-      if (je) {
-        if (key)
-          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
-        je.update({
-          name: name,
-          university: university,
-          image: key,
-          city: city,
-          creationYear: creationYear,
-        });
-        je.password = undefined;
-        return res.status(200).json(je);
+    if (req.file) {
+      const { key } = req.file;
+      try {
+        const je = await Je.findByPk(id);
+        if (je) {
+          if (key)
+            promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
+          je.update({
+            name: name,
+            university: university,
+            image: key,
+            city: city,
+            creationYear: creationYear,
+          });
+          je.password = undefined;
+          return res.status(200).json(je);
+        }
+        else
+          return res.status(404).json({ msg: 'NOT FOUND' });
+      } catch (error) {
+        return res.status(400).json(error);
       }
-      else
-        return res.status(404).json({ msg: 'NOT FOUND' });
-    } catch (error) {
-      return res.status(400).json(error);
+    }
+    else {
+
+      try {
+        const je = await Je.findByPk(id);
+        if (je) {
+          je.update({
+            name: name,
+            university: university,
+            city: city,
+            creationYear: creationYear,
+          });
+          je.password = undefined;
+          return res.status(200).json(je);
+        }
+        else
+          return res.status(404).json({ msg: 'NOT FOUND' });
+      } catch (error) {
+        return res.status(400).json(error);
+      }
     }
   },
 };
