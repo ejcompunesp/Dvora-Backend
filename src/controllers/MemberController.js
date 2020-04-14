@@ -40,7 +40,6 @@ module.exports = {
   async store(req, res) {
     const { jeId } = req.params;
     const { email, password, name, board, position, sr, dutyDate, dutyTime } = req.body;
-    const { key } = req.file;
     try {
       const je = await Je.findByPk(jeId);
 
@@ -50,8 +49,12 @@ module.exports = {
       je.password = undefined;
 
       hash = generateHash(password);
-
-      const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image: key, dutyDate, dutyTime });
+      if (req.file) {
+        const { key } = req.file;
+        const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image: key, dutyDate, dutyTime });
+      }
+      else
+        const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, dutyDate, dutyTime });
       member.password = undefined;
       return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
     } catch (error) {
@@ -107,21 +110,31 @@ module.exports = {
 
   async update(req, res) {
     const { id, name, board, position, sr, dutyDate, dutyTime } = req.body;
-    const { key } = req.file;
     try {
       const member = await Member.findByPk(id);
       if (member) {
-        if (key)
+        if (req.file) {
+          const { key } = req.file;
           promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', member.image));
-        member.update({
-          name: name,
-          board: board,
-          position: position,
-          sr: sr,
-          image: key,
-          dutyDate: dutyDate,
-          dutyTime: dutyTime,
-        });
+          member.update({
+            name: name,
+            board: board,
+            position: position,
+            sr: sr,
+            image: key,
+            dutyDate: dutyDate,
+            dutyTime: dutyTime,
+          });
+        }
+        else
+          member.update({
+            name: name,
+            board: board,
+            position: position,
+            sr: sr,
+            dutyDate: dutyDate,
+            dutyTime: dutyTime,
+          });
         member.password = undefined;
         return res.status(200).json(member);
       }

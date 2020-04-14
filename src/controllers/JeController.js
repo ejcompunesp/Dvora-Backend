@@ -37,12 +37,16 @@ module.exports = {
 
   async store(req, res) {
     const { name, email, password, university, city, creationYear } = req.body;
-    const { key } = req.file;
 
     const hash = generateHash(password);
 
     try {
-      const je = await Je.create({ name, email, password: hash, university, image: key, city, creationYear });
+      if (req.file) {
+        const { key } = req.file;
+        const je = await Je.create({ name, email, password: hash, university, image: key, city, creationYear });
+      }
+      else
+        const je = await Je.create({ name, email, password: hash, university, city, creationYear });
       je.password = undefined;
       return res.status(200).json({ je, token: generateToken({ id: je.id }) });
     } catch (error) {
@@ -89,13 +93,14 @@ module.exports = {
 
   async update(req, res) {
     const { id, name, university, city, creationYear } = req.body;
-    if (req.file) {
-      const { key } = req.file;
-      try {
-        const je = await Je.findByPk(id);
-        if (je) {
-          if (key)
-            promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
+
+    try {
+      const je = await Je.findByPk(id);
+      if (je) {
+        if (req.file) {
+          const { key } = req.file;
+          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
+
           je.update({
             name: name,
             university: university,
@@ -103,34 +108,22 @@ module.exports = {
             city: city,
             creationYear: creationYear,
           });
-          je.password = undefined;
-          return res.status(200).json(je);
         }
-        else
-          return res.status(404).json({ msg: 'NOT FOUND' });
-      } catch (error) {
-        return res.status(400).json(error);
-      }
-    }
-    else {
-
-      try {
-        const je = await Je.findByPk(id);
-        if (je) {
+        else {
           je.update({
             name: name,
             university: university,
             city: city,
             creationYear: creationYear,
           });
-          je.password = undefined;
-          return res.status(200).json(je);
         }
-        else
-          return res.status(404).json({ msg: 'NOT FOUND' });
-      } catch (error) {
-        return res.status(400).json(error);
+        je.password = undefined;
+        return res.status(200).json(je);
       }
+      else
+        return res.status(404).json({ msg: 'NOT FOUND' });
+    } catch (error) {
+      return res.status(400).json(error);
     }
   },
 };
