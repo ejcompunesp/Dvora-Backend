@@ -14,25 +14,6 @@ const generateToken = (params = {}) => jwt.sign(params, authConfig.secretMember,
   expiresIn: 86400, //um dia
 });
 
-const createMember = async (req) => {
-  const { jeId } = req.params;
-  const { email, password, name, board, position, sr, dutyDate, dutyTime } = req.body;
-  const hash = generateHash(password);
-  try {
-    if (req.file) {
-      var { key } = req.file;
-      var member = await Member.create({ jeId, name, email, password: hash, board, position, sr, image: key, dutyDate, dutyTime });
-    }
-    else
-      var member = await Member.create({ jeId, name, email, password: hash, board, position, sr, dutyDate, dutyTime });
-
-    return member;
-
-  } catch (error) {
-    return error;
-  }
-}
-
 module.exports = {
   async index(req, res) {
     const { jeId } = req.params;
@@ -61,17 +42,28 @@ module.exports = {
 
   async store(req, res) {
     const { jeId } = req.params;
+    const { email, password, name, board, position, sr, dutyDate, dutyTime } = req.body;
     try {
       const je = await Je.findByPk(jeId);
 
       if (!je)
         return res.status(400).json({ msg: 'ENTERPRISE NOT FOUND' });
 
-      const member = await createMember(req);
-      je.password = undefined;
+      const hash = generateHash(password);
 
-      member.password = undefined;
-      return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
+      if (req.file) {
+        const { key } = req.file;
+        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, image: key, dutyDate, dutyTime });
+        je.password = undefined;
+        member.password = undefined;
+        return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
+      }
+      else {
+        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, dutyDate, dutyTime });
+        je.password = undefined;
+        member.password = undefined;
+        return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
+      }
     } catch (error) {
       return res.status(400).json(error);
     }

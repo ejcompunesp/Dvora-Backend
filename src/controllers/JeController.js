@@ -13,23 +13,6 @@ const generateToken = (params = {}) => jwt.sign(params, authConfig.secretJe, {
   expiresIn: 86400, //um dia
 });
 
-const createJe = async (req) => {
-  const { name, email, password, university, city, creationYear } = req.body;
-  const hash = generateHash(password);
-  try {
-    if (req.file) {
-      var { key } = req.file;
-      var je = await Je.create({ name, email, password: hash, university, image: key, city, creationYear });
-    }
-    else
-      var je = await Je.create({ name, email, password: hash, university, city, creationYear });
-
-    return je;
-  } catch (error) {
-    return error;
-  }
-}
-
 module.exports = {
   async index(req, res) {
     try {
@@ -52,10 +35,22 @@ module.exports = {
   },
 
   async store(req, res) {
+    const { name, email, password, university, city, creationYear } = req.body;
+
+    const hash = generateHash(password);
+
     try {
-      const je = await createJe(req);
-      je.password = undefined;
-      return res.status(200).json({ je, token: generateToken({ id: je.id }) });
+      if (req.file) {
+        const { key } = req.file;
+        const je = await Je.create({ name, email, password: hash, university, image: key, city, creationYear });
+        je.password = undefined;
+        return res.status(200).json({ je, token: generateToken({ id: je.id }) });
+      }
+      else {
+        const je = await Je.create({ name, email, password: hash, university, city, creationYear });
+        je.password = undefined;
+        return res.status(200).json({ je, token: generateToken({ id: je.id }) });
+      }
     } catch (error) {
       return res.status(400).json(error);
     }
