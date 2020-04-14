@@ -52,6 +52,10 @@ module.exports = {
         return res.status(200).json({ je, token: generateToken({ id: je.id }) });
       }
     } catch (error) {
+      if (req.file) {
+        const { key } = req.file;
+        promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', key));
+      }
       return res.status(400).json(error);
     }
   },
@@ -102,9 +106,18 @@ module.exports = {
         je.password = undefined;
         return res.status(200).json(je);
       }
-      else
+      else {
+        if (req.file) {
+          const { key } = req.file;
+          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', key));
+        }
         return res.status(404).json({ msg: 'NOT FOUND' });
+      }
     } catch (error) {
+      if (req.file) {
+        const { key } = req.file;
+        promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', key));
+      }
       return res.status(400).json(error);
     }
   },

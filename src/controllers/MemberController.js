@@ -46,8 +46,13 @@ module.exports = {
     try {
       const je = await Je.findByPk(jeId);
 
-      if (!je)
+      if (!je) {
+        if (req.file) {
+          const { key } = req.file;
+          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
+        }
         return res.status(400).json({ msg: 'ENTERPRISE NOT FOUND' });
+      }
 
       const hash = generateHash(password);
 
@@ -65,6 +70,10 @@ module.exports = {
         return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
       }
     } catch (error) {
+      if (req.file) {
+        const { key } = req.file;
+        promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
+      }
       return res.status(400).json(error);
     }
   },
@@ -117,9 +126,18 @@ module.exports = {
         member.password = undefined;
         return res.status(200).json(member);
       }
-      else
+      else {
+        if (req.file) {
+          const { key } = req.file;
+          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
+        }
         return res.status(404).json({ msg: 'NOT FOUND' });
+      }
     } catch (error) {
+      if (req.file) {
+        const { key } = req.file;
+        promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
+      }
       return res.status(400).json(error);
     }
   },
