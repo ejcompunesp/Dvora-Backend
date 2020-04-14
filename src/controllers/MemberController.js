@@ -1,14 +1,37 @@
 const Member = require('../models/Member');
 const Je = require('../models/Je');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
+const path = require('path');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
+
+const { promisify } = require('util');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 
 const generateToken = (params = {}) => jwt.sign(params, authConfig.secretMember, {
   expiresIn: 86400, //um dia
 });
+
+const createMember = async (req) => {
+  const { jeId } = req.params;
+  const { email, password, name, board, position, sr, dutyDate, dutyTime } = req.body;
+  const hash = generateHash(password);
+  try {
+    if (req.file) {
+      var { key } = req.file;
+      var member = await Member.create({ jeId, name, email, password: hash, board, position, sr, image: key, dutyDate, dutyTime });
+    }
+    else
+      var member = await Member.create({ jeId, name, email, password: hash, board, position, sr, dutyDate, dutyTime });
+
+    return member;
+
+  } catch (error) {
+    return error;
+  }
+}
 
 module.exports = {
   async index(req, res) {
@@ -38,22 +61,15 @@ module.exports = {
 
   async store(req, res) {
     const { jeId } = req.params;
-    const { email, password, name, board, position, sr, dutyDate, dutyTime } = req.body;
     try {
       const je = await Je.findByPk(jeId);
 
       if (!je)
-        return res.status(400).json({ error: 'ENTERPRISE NOT FOUND' });
+        return res.status(400).json({ msg: 'ENTERPRISE NOT FOUND' });
 
+      const member = await createMember(req);
       je.password = undefined;
 
-      hash = generateHash(password);
-      if (req.file) {
-        const { key } = req.file;
-        const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image: key, dutyDate, dutyTime });
-      }
-      else
-        const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, dutyDate, dutyTime });
       member.password = undefined;
       return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
     } catch (error) {
@@ -66,7 +82,8 @@ module.exports = {
     try {
       const member = await Member.findByPk(id);
       if (member) {
-        promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', member.image));
+        if (member.image)
+          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', member.image));
         member.destroy();
         return res.status(200).json({ msg: 'ok' });
       }
@@ -84,7 +101,8 @@ module.exports = {
       if (member) {
         if (req.file) {
           const { key } = req.file;
-          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', member.image));
+          if (member.image)
+            promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', member.image));
           member.update({
             name: name,
             board: board,

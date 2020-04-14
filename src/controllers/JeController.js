@@ -13,6 +13,23 @@ const generateToken = (params = {}) => jwt.sign(params, authConfig.secretJe, {
   expiresIn: 86400, //um dia
 });
 
+const createJe = async (req) => {
+  const { name, email, password, university, city, creationYear } = req.body;
+  const hash = generateHash(password);
+  try {
+    if (req.file) {
+      var { key } = req.file;
+      var je = await Je.create({ name, email, password: hash, university, image: key, city, creationYear });
+    }
+    else
+      var je = await Je.create({ name, email, password: hash, university, city, creationYear });
+
+    return je;
+  } catch (error) {
+    return error;
+  }
+}
+
 module.exports = {
   async index(req, res) {
     try {
@@ -35,17 +52,8 @@ module.exports = {
   },
 
   async store(req, res) {
-    const { name, email, password, university, city, creationYear } = req.body;
-
-    const hash = generateHash(password);
-
     try {
-      if (req.file) {
-        const { key } = req.file;
-        const je = await Je.create({ name, email, password: hash, university, image: key, city, creationYear });
-      }
-      else
-        const je = await Je.create({ name, email, password: hash, university, city, creationYear });
+      const je = await createJe(req);
       je.password = undefined;
       return res.status(200).json({ je, token: generateToken({ id: je.id }) });
     } catch (error) {
@@ -58,7 +66,8 @@ module.exports = {
     try {
       const je = await Je.findByPk(id);
       if (je) {
-        promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
+        if (je.image)
+          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
         je.destroy();
         return res.status(200).json({ msg: 'ok' });
       }
@@ -77,8 +86,8 @@ module.exports = {
       if (je) {
         if (req.file) {
           const { key } = req.file;
-          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
-
+          if (je.image)
+            promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
           je.update({
             name: name,
             university: university,
