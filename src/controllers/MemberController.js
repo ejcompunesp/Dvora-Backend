@@ -34,7 +34,7 @@ module.exports = {
       return res.status(200).json( { je, members });
 
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).json({ msg: 'ERROR WHEN GET MEMBER' });
     }
   },
 
@@ -45,7 +45,7 @@ module.exports = {
       const je = await Je.findByPk(jeId);
 
       if (!je)
-        return res.status(400).json({ error: 'ENTERPRISE NOT FOUND' });
+        return res.status(404).json({ error: 'ENTERPRISE NOT FOUND' });
 
       je.password = undefined;
 
@@ -53,9 +53,9 @@ module.exports = {
 
       const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image });
       member.password = undefined;
-      return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
+      return res.status(201).json({ je, member, token: generateToken({ id: member.id }) });
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).json({ msg: 'ERROR WHEN CREATE MEMBER' });
     }
   },
 
@@ -68,17 +68,17 @@ module.exports = {
       });
       member = member.dataValues;
       if (member == null)
-        return res.status(400).json({ msg: 'EMAIL NOT FOUND' });
+        return res.status(404).json({ msg: 'EMAIL NOT FOUND' });
       let ok = validPassword(password, member.password);
       if (!ok)
-        return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
+        return res.status(404).json({ msg: 'INCORRECT PASSWORD' });
       else {
         member.password = undefined;
         member.je.password = undefined;
         return res.status(200).json({ member, token: generateToken({ id: member.id }) });
       }
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).json({ msg: 'LOGIN ERROR' });
     }
   },
 
@@ -88,12 +88,12 @@ module.exports = {
       const member = await Member.findByPk(id);
       if (member) {
         member.destroy();
-        return res.status(200).json({ msg: 'ok' });
+        return res.status(200).json({ msg: 'MEMBER DELETED SUCCESSFULLY' });
       }
       else
-        return res.status(400).json({ msg: 'NOT FOUND' });
+        return res.status(404).json({ msg: 'MEMBER NOT FOUND' });
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).json({ msg: 'MEMBER DELETE ERROR' });
     }
   },
 
@@ -109,12 +109,12 @@ module.exports = {
           sr: sr,
           image: image,
         });
-        return res.status(200).json({ msg: 'ok' });
+        return res.status(200).json({ msg: 'MEMBER UPDATED SUCCESSFULLY' });
       }
       else
-        return res.status(404).json({ msg: 'NOT FOUND' });
+        return res.status(404).json({ msg: 'MEMBER NOT FOUND' });
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).json({ msg: 'MEMBER UPDATE ERROR' });
     }
   },
 };

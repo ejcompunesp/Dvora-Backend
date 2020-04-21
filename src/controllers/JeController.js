@@ -15,7 +15,7 @@ module.exports = {
     try {
       const jes = await Je.findAll();
       if (jes.length == 0)
-        return res.status(200).json({ msg: 'NOT FOUND' });
+        return res.status(404).json({ msg: 'JE NOT FOUND' });
       else {
         for (let i = 0; i < jes.length; i++) {
           jes[i].password = undefined;
@@ -24,7 +24,7 @@ module.exports = {
         return res.status(200).json(jes);
       }
     } catch (error) {
-      return res.status(400).json({ msg: 'ERROR' });
+      return res.status(400).json({ msg: 'ERROR WHEN GET JE' });
     }
   },
 
@@ -36,9 +36,9 @@ module.exports = {
     try {
       const je = await Je.create({ name, email, password: hash, university, image, city, creationYear });
       je.password = undefined;
-      return res.status(200).json({ je, token: generateToken({ id: je.id }) });
+      return res.status(201).json({ je, token: generateToken({ id: je.id }) });
     } catch (error) {
-      return res.status(400).json({ msg: 'ERROR' });
+      return res.status(400).json({ msg: 'ERROR WHEN CREATE JE' });
     }
   },
 
@@ -50,16 +50,16 @@ module.exports = {
       });
       je = je.dataValues;
       if (je == null)
-        return res.status(400).json({ msg: 'EMAIL NOT FOUND' });
+        return res.status(404).json({ msg: 'EMAIL NOT FOUND' });
       let ok = validPassword(password, je.password);
       if (!ok)
-        return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
+        return res.status(404).json({ msg: 'INCORRECT PASSWORD' });
       else {
         je.password = undefined;
         return res.status(200).json({ je, token: generateToken({ id: je.id }) });
       }
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).json({ msg: 'LOGIN ERROR' });
     }
   },
 
@@ -69,12 +69,12 @@ module.exports = {
       const je = await Je.findByPk(id);
       if (je) {
         je.destroy();
-        return res.status(200).json({ msg: 'ok' });
+        return res.status(200).json({ msg: 'JE DELETED SUCCESSFULLY' });
       }
       else
-        return res.status(400).json({ msg: 'NOT FOUND' });
+        return res.status(400).json({ msg: 'JE NOT FOUND' });
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).json({ msg: 'JE DELETE ERROR' });
     }
   },
 
@@ -90,12 +90,12 @@ module.exports = {
           city: city,
           creationYear: creationYear,
         });
-        return res.status(200).json({ msg: 'ok' });
+        return res.status(200).json({ msg: 'JE UPDATED SUCCESSFULLY' });
       }
       else
-        return res.status(404).json({ msg: 'NOT FOUND' });
+        return res.status(404).json({ msg: 'JE NOT FOUND' });
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).json({ msg: 'JE UPDATE ERROR' });
     }
   },
 };

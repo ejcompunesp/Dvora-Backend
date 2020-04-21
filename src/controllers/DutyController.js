@@ -22,7 +22,7 @@ module.exports = {
 
       return res.status(200).json({ member });
     } catch (error) {
-      return res.status(400).json(error)
+      return res.status(400).json({ msg: 'ERROR WHEN GET DUTIES' })
     }
   },
 
@@ -34,7 +34,7 @@ module.exports = {
         where: {email}
       });
 
-      if (member == null) return res.status(400).json({ error: 'EMAIL NOT FOUND' })
+      if (member == null) return res.status(404).json({ error: 'EMAIL NOT FOUND' })
 
       const duty = await Duty.create({
         memberId: member.id,
@@ -42,10 +42,10 @@ module.exports = {
         elapsedTime: 0
       })
 
-      return res.status(200).json({ member, duty })
+      return res.status(201).json({ member, duty })
       
     } catch (error) {
-      return res.status(400).json({msg: 'error'});
+      return res.status(400).json({msg: 'ERROR WHEN REGISTERING ON DUTY' });
     }
   },
 
@@ -56,27 +56,24 @@ module.exports = {
 
     const end = moment()
     const start = moment(dutyAct.createdAt)
-    const elapsedTime = moment.range(start, end).diff('minute')
+    const elapsedTime = moment.range(start, end).diff('seconds')
     
     try {
-      const duty = await Duty.update({
+      const duty = await Duty.findByPk(dutyId)
+
+      duty.update({
         status: 1,
         elapsedTime
-      }, {
-        where: { 
-          id: dutyId, 
-        },
-        returning: true, 
-        plain: true
       })
+
       if (duty) {
-        return res.status(200).json({ elapsedTime })
+        return res.status(200).json(duty)
       }
       else
         return res.status(404).json({ msg: 'NOT FOUND' });
 
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).json({ msg: 'ERROR WHEN ENDING DUTY' });
     }
   },
 
