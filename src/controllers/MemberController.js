@@ -5,9 +5,8 @@ const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 
-const generateToken = (params = {}) => jwt.sign(params, authConfig.secret, {
+const generateToken = (params = {}) => jwt.sign(params, authConfig.secretMember, {
   expiresIn: 86400, //um dia
 });
 
@@ -30,7 +29,7 @@ module.exports = {
         members[i].password = undefined;
         
       console.log(members)
-      //je.member = undefined;
+
       return res.status(200).json( { je, members });
 
     } catch (error) {
@@ -40,7 +39,7 @@ module.exports = {
 
   async store(req, res) {
     const { jeId } = req.params;
-    const { email, password, name, board, position, sr, image } = req.body;
+    const { email, password, name, board, position, sr, image, dutyDate, dutyTime } = req.body;
     try {
       const je = await Je.findByPk(jeId);
 
@@ -51,7 +50,7 @@ module.exports = {
 
       hash = generateHash(password);
 
-      const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image });
+      const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image, dutyDate, dutyTime });
       member.password = undefined;
       return res.status(201).json({ je, member, token: generateToken({ id: member.id }) });
     } catch (error) {
@@ -98,16 +97,19 @@ module.exports = {
   },
 
   async update(req, res) {
-    const { id, name, board, position, sr, image } = req.body;
+    const { id, name, board, password, position, sr, image, dutyDate, dutyTime } = req.body;
     try {
       const member = await Member.findByPk(id);
       if (member) {
         member.update({
           name: name,
+          password: password,
           board: board,
           position: position,
           sr: sr,
           image: image,
+          dutyDate: dutyDate,
+          dutyTime: dutyTime,
         });
         return res.status(200).json({ msg: 'MEMBER UPDATED SUCCESSFULLY' });
       }

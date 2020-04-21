@@ -4,9 +4,8 @@ const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
-const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 
-const generateToken = (params = {}) => jwt.sign(params, authConfig.secret, {
+const generateToken = (params = {}) => jwt.sign(params, authConfig.secretJe, {
   expiresIn: 86400, //um dia
 });
 
@@ -79,12 +78,13 @@ module.exports = {
   },
 
   async update(req, res) {
-    const { id, name, university, image, city, creationYear } = req.body;
+    const { id, password, name, university, image, city, creationYear } = req.body;
     try {
       const je = await Je.findByPk(id);
       if (je) {
         je.update({
           name: name,
+          password: password,
           university: university,
           image: image,
           city: city,
