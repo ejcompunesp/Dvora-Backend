@@ -60,6 +60,9 @@ module.exports = {
 
   async login(req, res) {
     const { email, password } = req.body;
+    if (email == null || password == null) 
+      return res.status(400).json({ msg: 'EMAIL OR PASSWORD ERROR' })
+      
     try {
       let member = await Member.findOne({
         where: { email },

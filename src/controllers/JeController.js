@@ -43,12 +43,15 @@ module.exports = {
 
   async login(req, res) {
     const { email, password } = req.body;
+    if (email == null || password == null) 
+      return res.status(400).json({ msg: 'PARAMETERS ERROR'})
+      
     try {
       let je = await Je.findOne({
         where: { email },
       });
       je = je.dataValues;
-      if (je == null)
+      if (je == null || je === undefined)
         return res.status(404).json({ msg: 'EMAIL NOT FOUND' });
       let ok = validPassword(password, je.password);
       if (!ok)

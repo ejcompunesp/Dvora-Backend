@@ -7,8 +7,11 @@ const moment = MomentRange.extendMoment(Moment);
 
 module.exports = {
   async index(req, res) {
+
     const { memberId } = req.params
-    
+    if (memberId == null || memberId == undefined) 
+      return res.status(400).json({ msg: 'PARAMETERS ERROR'})
+
     try {
       const member = await Member.findByPk(memberId, {
         include: { association: 'duties' },
