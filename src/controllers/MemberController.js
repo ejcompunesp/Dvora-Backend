@@ -28,7 +28,7 @@ module.exports = {
       if (!je)
         return res.status(404).json({ error: 'ENTERPRISE NOT FOUND' })
 
-      const members =  await Member.findAll({
+      const members = await Member.findAll({
         where: { jeId }
       })
       if (members.length == 0)
@@ -37,10 +37,10 @@ module.exports = {
       je.password = undefined;
       for (let i = 0; i < members.length; i++)
         members[i].password = undefined;
-        
+
       console.log(members)
 
-      return res.status(200).json( { je, members });
+      return res.status(200).json({ je, members });
 
     } catch (error) {
       return res.status(400).json({ error: 'ERROR WHEN GET MEMBER' });
@@ -60,44 +60,35 @@ module.exports = {
     try {
       const je = await Je.findByPk(jeId);
 
-      if (!je)
-        return res.status(404).json({ error: 'ENTERPRISE NOT FOUND' });
-
-      je.password = undefined;
+      if (!je) {
+        if (req.file) {
+          const { key } = req.file;
+          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
+        }
+        return res.status(400).json({ msg: 'ENTERPRISE NOT FOUND' });
+      }
 
       const hash = generateHash(password);
 
-      const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image, dutyDate, dutyTime });
-      member.password = undefined;
-      return res.status(201).json({ je, member, token: generateToken({ id: member.id }) });
-    } catch (error) {
-      return res.status(400).json({ error: 'ERROR WHEN CREATE MEMBER' });
-    }
-  },
-
-  async login(req, res) {
-    const { email, password } = req.body;
-    if (!email || !password || email == null || password == null || email == undefined || password == undefined) 
-      return res.status(400).json({ error: 'EMAIL OR PASSWORD IS INVALID' })
-      
-    try {
-      let member = await Member.findOne({
-        where: { email },
-        include: { association: 'je' },
-      });
-      member = member.dataValues;
-      if (member == null)
-        return res.status(404).json({ error: 'EMAIL NOT FOUND' });
-      let ok = validPassword(password, member.password);
-      if (!ok)
-        return res.status(404).json({ error: 'INCORRECT PASSWORD' });
-      else {
+      if (req.file) {
+        const { key } = req.file;
+        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, image: key, dutyDate, dutyTime });
+        je.password = undefined;
         member.password = undefined;
-        member.je.password = undefined;
-        return res.status(200).json({ member, token: generateToken({ id: member.id }) });
+        return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
+      }
+      else {
+        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, dutyDate, dutyTime });
+        je.password = undefined;
+        member.password = undefined;
+        return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
       }
     } catch (error) {
-      return res.status(400).json({ error: 'LOGIN ERROR' });
+      if (req.file) {
+        const { key } = req.file;
+        promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
+      }
+      return res.status(400).json(error);
     }
   },
 
@@ -134,22 +125,45 @@ module.exports = {
     try {
       const member = await Member.findByPk(id);
       if (member) {
-        member.update({
-          name: name,
-          password: password,
-          board: board,
-          position: position,
-          sr: sr,
-          image: image,
-          dutyDate: dutyDate,
-          dutyTime: dutyTime,
-        });
-        return res.status(200).json({ msg: 'MEMBER UPDATED SUCCESSFULLY' });
+        if (req.file) {
+          const { key } = req.file;
+          if (member.image)
+            promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', member.image));
+          member.update({
+            name: name,
+            board: board,
+            position: position,
+            sr: sr,
+            image: key,
+            dutyDate: dutyDate,
+            dutyTime: dutyTime,
+          });
+        }
+        else
+          member.update({
+            name: name,
+            board: board,
+            position: position,
+            sr: sr,
+            dutyDate: dutyDate,
+            dutyTime: dutyTime,
+          });
+        member.password = undefined;
+        return res.status(200).json(member);
       }
-      else
-        return res.status(404).json({ error: 'MEMBER NOT FOUND' });
+      else {
+        if (req.file) {
+          const { key } = req.file;
+          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
+        }
+        return res.status(404).json({ msg: 'NOT FOUND' });
+      }
     } catch (error) {
-      return res.status(400).json({ error: 'MEMBER UPDATE ERROR' });
+      if (req.file) {
+        const { key } = req.file;
+        promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
+      }
+      return res.status(400).json(error);
     }
   },
 };

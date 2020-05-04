@@ -15,9 +15,13 @@ const generateTokenJe = (params = {}) => jwt.sign(params, authConfig.secretJe, {
   expiresIn: 86400, //um dia
 });
 
+const errors = [];
+
 module.exports = {
   async login(req, res) {
     const { email, password } = req.body;
+    if (!email || !password || email == null || password == null || email == undefined || password == undefined)
+      return res.status(400).json({ error: 'EMAIL OR PASSWORD IS INVALID' })
     try {
       let je = await Je.findOne({ where: { email } });
       if (je) {
