@@ -1,9 +1,12 @@
 const Je = require('../models/Je');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
+const path = require('path');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
 
 const errors = [];
+const { promisify } = require('util');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 
@@ -82,6 +85,8 @@ module.exports = {
     try {
       const je = await Je.findByPk(id);
       if (je) {
+        if (je.image)
+          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
         je.destroy();
         return res.status(200).json({ msg: 'JE DELETED SUCCESSFULLY' });
       }
@@ -105,20 +110,42 @@ module.exports = {
     try {
       const je = await Je.findByPk(id);
       if (je) {
-        je.update({
-          name: name,
-          password: password,
-          university: university,
-          image: image,
-          city: city,
-          creationYear: creationYear,
-        });
-        return res.status(200).json({ msg: 'JE UPDATED SUCCESSFULLY' });
+        if (req.file) {
+          const { key } = req.file;
+          if (je.image)
+            promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
+          je.update({
+            name: name,
+            university: university,
+            image: key,
+            city: city,
+            creationYear: creationYear,
+          });
+        }
+        else {
+          je.update({
+            name: name,
+            university: university,
+            city: city,
+            creationYear: creationYear,
+          });
+        }
+        je.password = undefined;
+        return res.status(200).json(je);
       }
-      else
-        return res.status(404).json({ error: 'JE NOT FOUND' });
+      else {
+        if (req.file) {
+          const { key } = req.file;
+          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', key));
+        }
+        return res.status(404).json({ msg: 'NOT FOUND' });
+      }
     } catch (error) {
-      return res.status(400).json({ error: 'JE UPDATE ERROR' });
+      if (req.file) {
+        const { key } = req.file;
+        promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', key));
+      }
+      return res.status(400).json(error);
     }
   },
 };

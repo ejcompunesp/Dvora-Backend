@@ -1,2 +1,13 @@
 node_modules
+<<<<<<< HEAD
 src/config/database.js
+=======
+
+.env
+
+public/uploads/je/*
+public/uploads/member/*
+
+!public/uploads/je/.gitkeep
+!public/uploads/member/.gitkeep
+>>>>>>> 1f95962e80a9ab02f90305f70f8c74e2cab7a975

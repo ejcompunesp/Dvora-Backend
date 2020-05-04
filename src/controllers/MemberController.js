@@ -1,10 +1,14 @@
 const Member = require('../models/Member');
 const Je = require('../models/Je');
 const bcrypt = require('bcrypt');
+const fs = require('fs');
+const path = require('path');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
 
 const errors = []
+
+const { promisify } = require('util');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 
@@ -61,7 +65,7 @@ module.exports = {
 
       je.password = undefined;
 
-      hash = generateHash(password);
+      const hash = generateHash(password);
 
       const member = await Member.create({ jeId, email, password: hash, name, board, position, sr, image, dutyDate, dutyTime });
       member.password = undefined;
@@ -105,6 +109,8 @@ module.exports = {
     try {
       const member = await Member.findByPk(id);
       if (member) {
+        if (member.image)
+          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', member.image));
         member.destroy();
         return res.status(200).json({ msg: 'MEMBER DELETED SUCCESSFULLY' });
       }
