@@ -9,8 +9,8 @@ module.exports = {
   async index(req, res) {
 
     const { memberId } = req.params
-    if (memberId == null || memberId == undefined) 
-      return res.status(400).json({ msg: 'PARAMETERS ERROR'})
+    if (!memberId || memberId == null || memberId == undefined) 
+      return res.status(400).json({ error: 'MEMBER ID IS INVALID' })
 
     try {
       const member = await Member.findByPk(memberId, {
@@ -18,20 +18,22 @@ module.exports = {
       });
 
       if (!member)
-        return res.status(404).json({ msg: 'MEMBER NOT FOUND' })
+        return res.status(404).json({ error: 'MEMBER NOT FOUND' })
       member.password = undefined;
 
-      if (member.duties.length == 0) return res.status(404).json({ msg: 'NO DUTIES FOUND' }) 
+      if (member.duties.length == 0) return res.status(404).json({ error: 'NO DUTIES FOUND' }) 
 
       return res.status(200).json({ member });
     } catch (error) {
-      return res.status(400).json({ msg: 'ERROR WHEN GET DUTIES' })
+      return res.status(400).json({ error: 'ERROR WHEN GET DUTIES' })
     }
   },
 
   async store(req, res) {
     const { email, password } = req.body;
-  
+    if (!email || email == null || email == undefined || !password || password == null || password == undefined) 
+      return res.status(400).json({ error: 'EMAIL OR PASSWORD IS INVALID' })
+
     try {
       const member = await Member.findOne({ 
         where: {email}
@@ -48,12 +50,14 @@ module.exports = {
       return res.status(201).json({ member, duty })
       
     } catch (error) {
-      return res.status(400).json({msg: 'ERROR WHEN REGISTERING ON DUTY' });
+      return res.status(400).json({ error: 'ERROR WHEN REGISTERING ON DUTY' });
     }
   },
 
   async update(req, res) {
     const { dutyId } = req.params;
+    if (dutyId == null) 
+      return res.status(400).json({ error: 'DUTY ID IS INVALID' })
 
     const dutyAct = await Duty.findByPk(dutyId)
 
@@ -73,10 +77,10 @@ module.exports = {
         return res.status(200).json(duty)
       }
       else
-        return res.status(404).json({ msg: 'NOT FOUND' });
+        return res.status(404).json({ error: 'NOT FOUND' });
 
     } catch (error) {
-      return res.status(400).json({ msg: 'ERROR WHEN ENDING DUTY' });
+      return res.status(400).json({ error: 'ERROR WHEN ENDING DUTY' });
     }
   },
 
