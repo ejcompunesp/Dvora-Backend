@@ -26,6 +26,18 @@ module.exports = {
         creationYear: '2009',
         createdAt: new Date(),
         updatedAt: new Date()
+      }, 
+      {
+        id: 3,
+        name: 'Opera Krios',
+        email: 'ok@ejcomp.com',
+        password: '2525456',
+        university: 'FCT/UNESP',
+        image: 'img3',
+        city: 'Presidente Prudente - SP',
+        creationYear: '2007',
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ], {});
   },

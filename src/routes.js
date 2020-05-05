@@ -4,10 +4,7 @@ const multer = require("multer");
 const JeController = require('./controllers/JeController');
 const MemberController = require('./controllers/MemberController');
 const DutyController = require('./controllers/DutyController');
-<<<<<<< HEAD
 //const authMiddleware = require('./middlewares//auth');
-=======
->>>>>>> 143cb538d28fd29dfa9b84bebbf6837357768a59
 const multerMiddleware = require('./middlewares/multer');
 const LoginController = require('./controllers/LoginController');
 const authJe = require('./middlewares/authJe');
