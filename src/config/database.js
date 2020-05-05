@@ -5,6 +5,7 @@ module.exports = {
   password: '',
   database: 'dvora',
   define: {
-    timestamp: true,  //created_at, updated_at
+    timestamps: true,  //createdAt, updatedAt
+    underscored: false
   },
 }
