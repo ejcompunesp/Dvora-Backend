@@ -41,39 +41,27 @@ module.exports = {
     if (!city || city == null || city == undefined) errors.push({ error: 'CITY IS INVALID' })
     if (!creationYear || creationYear == null || creationYear == undefined) errors.push({ error: 'CREATION YEAR IS INVALID' })
     if (errors.length > 0) return res.status(400).json(errors)
-    
+
     hash = generateHash(password);
 
     try {
-      const je = await Je.create({ name, email, password: hash, university, image, city, creationYear });
-      je.password = undefined;
-      return res.status(201).json({ je, token: generateToken({ id: je.id }) });
-    } catch (error) {
-      return res.status(400).json({ error: 'ERROR WHEN CREATE JE' });
-    }
-  },
-
-  async login(req, res) {
-    const { email, password } = req.body;
-    if (!email || email == null || email == undefined || !password || password == null || password == undefined) 
-      return res.status(400).json({ error: 'EMAIL OR PASSWORD INVALID' })
-      
-    try {
-      let je = await Je.findOne({
-        where: { email },
-      });
-      je = je.dataValues;
-      if (je == null || je === undefined)
-        return res.status(404).json({ error: 'EMAIL NOT FOUND' });
-      let ok = validPassword(password, je.password);
-      if (!ok)
-        return res.status(404).json({ error: 'INCORRECT PASSWORD' });
+      if (req.file) {
+        const { key } = req.file;
+        const je = await Je.create({ name, email, password: hash, university, image: key, city, creationYear });
+        je.password = undefined;
+        return res.status(200).json({ je, token: generateToken({ id: je.id }) });
+      }
       else {
+        const je = await Je.create({ name, email, password: hash, university, city, creationYear });
         je.password = undefined;
         return res.status(200).json({ je, token: generateToken({ id: je.id }) });
       }
     } catch (error) {
-      return res.status(400).json({ error: 'LOGIN ERROR' });
+      if (req.file) {
+        const { key } = req.file;
+        promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', key));
+      }
+      return res.status(400).json(error);
     }
   },
 
@@ -97,7 +85,7 @@ module.exports = {
     }
   },
 
-  async update(req, res) { 
+  async update(req, res) {
     const { id, password, name, university, image, city, creationYear } = req.body;
     if (!name || name == null || name == undefined) errors.push({ error: 'NAME IS INVALID' })
     if (!email || email == null || email == undefined) errors.push({ error: 'EMAIL IS INVALID' })
