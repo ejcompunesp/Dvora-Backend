@@ -17,4 +17,4 @@ class Duty extends Model {
 }
 
 
-module.exports = Duty;
+module.exports = Duty; 
