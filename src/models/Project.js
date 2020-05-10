@@ -14,7 +14,7 @@ class Project extends Model {
       })
   }
   static associate(models) {
-    this.belongsTo(models.Je, { foreignKey: 'jeId', as: 'je' });
+    this.belongsTo(models.Je, { foreignKey: 'jeId', as: 'jes' });
     this.belongsToMany(models.Member, { foreignKey: 'memberId', through: 'memberProjects', as: 'members' });
   }
 }
