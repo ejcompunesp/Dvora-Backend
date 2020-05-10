@@ -2,7 +2,7 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('members', {
+    return queryInterface.createTable('Members', {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
@@ -12,7 +12,7 @@ module.exports = {
       jeId: {
         type: Sequelize.INTEGER,
         allowNull: false,
-        references: { model: 'jes', key: 'id' },
+        references: { model: 'Jes', key: 'id' },
         onUpdate: 'CASCADE',
         onDelete: 'CASCADE',
       },
@@ -45,6 +45,14 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: true,
       },
+      dutyDate: {
+        type: Sequelize.DATE,
+        allowNull: true,
+      },
+      dutyTime: {
+        type: Sequelize.INTEGER,
+        allowNull: true,
+      },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,
@@ -57,6 +65,6 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('members');
+    return queryInterface.dropTable('Members');
   }
 };

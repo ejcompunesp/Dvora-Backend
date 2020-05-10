@@ -1,8 +1,13 @@
 const express = require("express");
+const multer = require("multer");
+
 const JeController = require('./controllers/JeController');
 const MemberController = require('./controllers/MemberController');
-const ProjectController = require('./controllers/ProjectController');
-const authMiddleware = require('./middlewares/auth');
+const DutyController = require('./controllers/DutyController');
+const multerMiddleware = require('./middlewares/multer');
+const LoginController = require('./controllers/LoginController');
+const authJe = require('./middlewares/authJe');
+const authMember = require('./middlewares/authMember');
 
 const routes = express.Router();
 
@@ -10,22 +15,22 @@ routes.get("/", (req, res) => {
   res.json({ ok: true });
 });
 
+routes.post('/login', LoginController.login);
+
 routes.get('/jes', JeController.index);
-routes.post('/jes/signup', JeController.store);
-routes.post('/jes/login', JeController.login);
-routes.delete('/jes/delete', authMiddleware, JeController.delete);
-routes.put('/jes/update', authMiddleware, JeController.update);
+routes.post('/jes/signup', multer(multerMiddleware).single('file'), JeController.store);
+routes.delete('/jes/delete', authJe, JeController.delete);
+routes.put('/jes/update', authJe, multer(multerMiddleware).single('file'), JeController.update);
 
 routes.get('/jes/:jeId/members', MemberController.index);
 routes.post('/jes/:jeId/members/signup', MemberController.store);
-routes.post('/members/login', MemberController.login);
-routes.delete('/jes/:jeId/members/delete', authMiddleware, MemberController.delete);
-routes.put('/jes/:jeId/members/update', authMiddleware, MemberController.update);
+routes.post('/jes/:jeId/members/signup', multer(multerMiddleware).single('file'), MemberController.store);
+routes.delete('/jes/:jeId/members/delete', authMember, MemberController.delete);
+routes.put('/jes/:jeId/members/update', authMember, multer(multerMiddleware).single('file'), MemberController.update);
 
-routes.get('/jes/:jeId/projects', ProjectController.index);
-routes.post('/jes/:jeId/projects/create', ProjectController.store);
-routes.post('/jes/:jeId/projects/:projectId', ProjectController.addMember);
-routes.delete('/jes/:jeId/projects/:projectId/delete', ProjectController.delete);
-routes.put('/jes/:jeId/projects/:projectId/update', ProjectController.update);
+routes.get('/duties/:memberId', DutyController.index);
+routes.post('/duties/register', DutyController.store);
+routes.put('/duties/:dutyId/finish', DutyController.update);
+
 
 module.exports = routes;

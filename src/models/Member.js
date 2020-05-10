@@ -10,13 +10,16 @@ class Member extends Model {
       position: DataTypes.STRING,
       sr: DataTypes.STRING,
       image: DataTypes.STRING,
+      dutyDate: DataTypes.DATE,
+      dutyTime: DataTypes.INTEGER,
     },
       {
-        sequelize: connection,
+        sequelize: connection
       })
   }
   static associate(models) {
-    this.belongsTo(models.Je, { foreignKey: 'jeId', as: 'je' });
+    this.belongsTo(models.Je, { foreignKey: 'jeId', as: 'jes' });
+    this.hasMany(models.Duty, { foreignKey: 'memberId', as: 'duties' });
     this.belongsToMany(models.Project, { foreignKey: 'projectId', through: 'memberProjects', as: 'projects' });
   }
 }

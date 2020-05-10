@@ -1,1 +1,9 @@
 node_modules
+
+.env
+
+public/uploads/je/*
+public/uploads/member/*
+
+!public/uploads/je/.gitkeep
+!public/uploads/member/.gitkeep
