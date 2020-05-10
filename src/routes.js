@@ -4,6 +4,7 @@ const multer = require("multer");
 const JeController = require('./controllers/JeController');
 const MemberController = require('./controllers/MemberController');
 const DutyController = require('./controllers/DutyController');
+//const authMiddleware = require('./middlewares//auth');
 const multerMiddleware = require('./middlewares/multer');
 const LoginController = require('./controllers/LoginController');
 const authJe = require('./middlewares/authJe');
