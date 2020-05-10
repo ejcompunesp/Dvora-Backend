@@ -50,7 +50,7 @@ module.exports = {
   async store(req, res) {  //AQUI
     const { jeId } = req.params;
     if (!jeId || jeId == null || jeId == undefined) errors.push({ error: 'JE ID IS INVALID' })
-    const { email, password, name, board, position, sr, image, dutyDate, dutyTime } = req.body;
+    const { email, password, name, board, position, sr, dutyDate, dutyTime } = req.body;
     if (!email || email == null || email == undefined) errors.push({ error: 'EMAIL IS INVALID' })
     if (!password || password == null || password == undefined) errors.push({ error: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ error: 'NAME IS INVALID' })
@@ -113,7 +113,7 @@ module.exports = {
   },
 
   async update(req, res) { //AQUI
-    const { id, name, board, password, position, sr, image, dutyDate, dutyTime } = req.body;
+    const { id, name, board, password, position, sr, dutyDate, dutyTime } = req.body;
     if (!email || email == null || email == undefined) errors.push({ error: 'EMAIL IS INVALID' })
     if (!password || password == null || password == undefined) errors.push({ error: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ error: 'NAME IS INVALID' })

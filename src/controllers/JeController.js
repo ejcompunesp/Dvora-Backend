@@ -33,7 +33,7 @@ module.exports = {
   },
 
   async store(req, res) {
-    const { name, email, password, university, image, city, creationYear } = req.body;
+    const { name, email, password, university, city, creationYear } = req.body;
     if (!name || name == null || name == undefined) errors.push({ error: 'NAME IS INVALID' })
     if (!email || email == null || email == undefined) errors.push({ error: 'EMAIL IS INVALID' })
     if (!password || password == null || password == undefined) errors.push({ error: 'PASSWORD IS INVALID' })
@@ -86,7 +86,7 @@ module.exports = {
   },
 
   async update(req, res) {
-    const { id, password, name, university, image, city, creationYear } = req.body;
+    const { id, password, name, university, city, creationYear } = req.body;
     if (!name || name == null || name == undefined) errors.push({ error: 'NAME IS INVALID' })
     if (!email || email == null || email == undefined) errors.push({ error: 'EMAIL IS INVALID' })
     if (!password || password == null || password == undefined) errors.push({ error: 'PASSWORD IS INVALID' })

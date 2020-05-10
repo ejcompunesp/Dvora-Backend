@@ -7,6 +7,8 @@ module.exports = {
   async store(req, res) {
     const { dutyId } = req.params;
 
+    if (!dutyId || dutyId == null || dutyId == undefined) errors.push({ error: 'DUTY ID IS INVALID' });
+
     const { satisfaction, productivity, mood, note, activity } = req.body;
 
     if (!satisfaction || satisfaction == null || satisfaction == undefined) errors.push({ error: 'SATISFACTION IS INVALID' });
