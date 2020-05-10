@@ -32,6 +32,6 @@ routes.get("/duties/:memberId", DutyController.index);
 routes.post("/duties/register", DutyController.store);
 routes.put("/duties/:dutyId/finish", DutyController.update);
 
-routes.post("/duties/:dutyId/feedbackregister", FeedbackController.store);
+routes.post("/duties/:dutyId/feedback", FeedbackController.store);
 
 module.exports = routes;
