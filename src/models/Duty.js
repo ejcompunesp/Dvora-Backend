@@ -15,6 +15,7 @@ class Duty extends Model {
 
   static associate(models) {
     this.belongsTo(models.Member, { foreignKey: "memberId", as: "members" });
+    this.hasOne(models.Feedback, { foreignKey: "dutyId", as: "feedback" });
   }
 }
 

@@ -10,14 +10,14 @@ module.exports = {
     try {
       const duty = await Duty.findByPk(dutyId);
 
-      if (dutyId == null)
+      if (duty == null)
         return res.status(404).json({ error: "DUTY NOT FOUND" });
 
       //Fazer verificação de status do plantão
-      console.log(satisfaction, productivity, mood, note, activity);
+      console.log({ duty });
 
       const feedback = await Feedback.create({
-        dutyId,
+        dutyId: dutyId,
         satisfaction,
         productivity,
         mood,
@@ -27,9 +27,7 @@ module.exports = {
 
       return res.status(200).json({ feedback, duty });
     } catch (error) {
-      return res
-        .status(400)
-        .json({ error: "ERROR WHEN REGISTERING ON FEEDBACK" });
+      return res.status(400).json({ error });
     }
   },
 };

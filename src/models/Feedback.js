@@ -15,9 +15,8 @@ class Feedback extends Model {
       }
     );
   }
-
   static associate(models) {
-    this.belongsTo(models.Duty, { foreignKey: "dutyId", as: "duty" });
+    this.belongsTo(models.Duty, { foreignKey: "dutyId", as: "feedback" });
   }
 }
 
