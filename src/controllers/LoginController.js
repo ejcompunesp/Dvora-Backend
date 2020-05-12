@@ -4,7 +4,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
 
-const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 
 const generateTokenMember = (params = {}) => jwt.sign(params, authConfig.secretMember, {
@@ -37,15 +36,15 @@ module.exports = {
       else {
         let je = await Je.findOne({
           include: [{
-            association: 'member',
+            association: 'members',
             where: { email: email }
           }],
         });
-        je = je.dataValues;
-        member = je.member[0].dataValues;
-        je.member = undefined;
+        if (!je)
+          return res.status(404).json({ error: 'EMAIL NOT FOUND' });
+        member = je.members[0];
+        je.dataValues.members = undefined;
         let ok = validPassword(password, member.password);
-        console.log(ok);
         if (!ok)
           return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
 

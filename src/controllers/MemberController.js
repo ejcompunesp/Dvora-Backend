@@ -38,7 +38,6 @@ module.exports = {
       for (let i = 0; i < members.length; i++)
         members[i].password = undefined;
 
-      console.log(members)
 
       return res.status(200).json({ je, members });
 
