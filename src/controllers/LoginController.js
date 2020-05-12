@@ -1,5 +1,4 @@
 const Je = require('../models/Je');
-const Member = require('../models/Member');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
@@ -13,8 +12,6 @@ const generateTokenMember = (params = {}) => jwt.sign(params, authConfig.secretM
 const generateTokenJe = (params = {}) => jwt.sign(params, authConfig.secretJe, {
   expiresIn: 86400, //um dia
 });
-
-const errors = [];
 
 module.exports = {
   async login(req, res) {
