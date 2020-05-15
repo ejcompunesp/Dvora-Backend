@@ -1,9 +1,38 @@
 const Feedback = require("../models/Feedback");
 const Duty = require("../models/Duty");
+const Member = require("../models/Member");
 
 const errors = [];
 
 module.exports = {
+  async index(req, res) {
+    try {
+      const query = await Member.findAll({
+        attributes: [
+          'name'
+        ],
+        include: [{
+          association: 'duties',
+          attributes: [
+            'elapsedTime'
+          ],
+          include: [{
+            association: 'feedback',
+            attributes: [
+              'id'
+            ],
+          }]
+        }]
+      });
+      if (!query)
+        return res.status(404).json({ error: 'NOT FOUND' });
+
+      return res.status(200).json(query);
+    } catch (error) {
+      return res.status(400).json({ error: 'ERROR WHEN GETTING FEEDBACK' })
+    }
+  },
+
   async store(req, res) {
     const { dutyId } = req.params;
 
