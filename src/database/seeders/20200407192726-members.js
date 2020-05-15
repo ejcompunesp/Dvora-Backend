@@ -41,6 +41,31 @@ module.exports = {
         image: 'img3',
         createdAt: new Date(),
         updatedAt: new Date()
+      },
+      {
+        id: 4,
+        jeId: 1,
+        email: 'jp@ejcomp.com',
+        password: '12345678',
+        name: 'Joao Plinio Baptista',
+        board: 'esse ai msm',
+        position: 'Presida',
+        sr: '171254520',
+        image: 'img4',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }, {
+        id: 5,
+        jeId: 2,
+        email: 'cristianos@ejcomp.com',
+        password: '51512525456',
+        name: 'Cristino Souza',
+        board: 'esse ai msm',
+        position: 'Adm',
+        sr: '171254211',
+        image: 'img4',
+        createdAt: new Date(),
+        updatedAt: new Date()
       }
     ], {});
   },
