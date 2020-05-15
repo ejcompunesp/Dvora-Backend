@@ -1,5 +1,4 @@
 const Je = require('../models/Je');
-const Member = require('../models/Member');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
@@ -13,8 +12,6 @@ const generateTokenMember = (params = {}) => jwt.sign(params, authConfig.secretM
 const generateTokenJe = (params = {}) => jwt.sign(params, authConfig.secretJe, {
   expiresIn: 86400, //um dia
 });
-
-const errors = [];
 
 module.exports = {
   async login(req, res) {
@@ -36,13 +33,14 @@ module.exports = {
       else {
         let je = await Je.findOne({
           include: [{
-            association: 'member',
+            association: 'members',
             where: { email: email }
           }],
         });
-        je = je.dataValues;
-        member = je.member[0].dataValues;
-        je.member = undefined;
+        if (!je)
+          return res.status(404).json({ error: 'EMAIL NOT FOUND' });
+        member = je.members[0];
+        je.dataValues.members = undefined;
         let ok = validPassword(password, member.password);
         if (!ok)
           return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
