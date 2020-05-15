@@ -9,6 +9,7 @@ class Feedback extends Model {
         mood: DataTypes.INTEGER,
         note: DataTypes.STRING,
         activity: DataTypes.STRING,
+        monitoring: DataTypes.STRING,
       },
       {
         sequelize: connection,

@@ -38,7 +38,7 @@ routes.post(
   multer(multerMiddleware).single("file"),
   MemberController.store
 );
-routes.delete("/jes/:jeId/members/delete", authMember, MemberController.delete);
+routes.delete("/jes/:jeId/members/delete", authJe, MemberController.delete);
 routes.put(
   "/jes/:jeId/members/update",
   authMember,
@@ -54,5 +54,10 @@ routes.get('/feedback', FeedbackController.index);
 routes.post("/duties/:dutyId/feedback", FeedbackController.store);
 routes.delete("/duties/feedback/delete", authJe, FeedbackController.delete);
 routes.put("/duties/feedback/update", authMember, FeedbackController.update);
+routes.put(
+  "/duties/feedback/monitoring",
+  authJe,
+  FeedbackController.updateMonitoring
+);
 
 module.exports = routes;

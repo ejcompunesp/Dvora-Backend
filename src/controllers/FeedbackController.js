@@ -75,6 +75,28 @@ module.exports = {
     }
   },
 
+  async updateMonitoring(req, res) {
+    const { monitoring, feedbackId } = req.body;
+
+    if (!monitoring || monitoring == null || monitoring == undefined)
+      errors.push({ error: "MONITORING IS INVALID" });
+
+    try {
+      const feedback = await Feedback.findByPk(feedbackId);
+
+      if (!feedback)
+        return res.status(404).json({ error: "FEEDBACK NOT FOUND" });
+
+      feedback.update({
+        monitoring: monitoring,
+      });
+
+      return res.status(200).json(feedback);
+    } catch (error) {
+      return res.status(400).json({ error: "erro" });
+    }
+  },
+
   async update(req, res) {
     const {
       feedbackId,
@@ -84,6 +106,7 @@ module.exports = {
       note,
       activity,
     } = req.body;
+    console.log(req.body);
 
     if (!satisfaction || satisfaction == null || satisfaction == undefined)
       errors.push({ error: "SATISFACTION IS INVALID" });
@@ -98,14 +121,18 @@ module.exports = {
     try {
       const feedback = await Feedback.findByPk(feedbackId);
 
-      //verificações?
+      if (!feedback)
+        return res.status(404).json({ error: "FEEDBACK NOT FOUND" });
 
       feedback.update({
         satisfaction: satisfaction,
         productivity: productivity,
         mood: mood,
+        note: note,
         activity: activity,
       });
+
+      return res.status(200).json(feedback);
     } catch (error) {
       return res.status(400).json({ error });
     }
@@ -121,10 +148,10 @@ module.exports = {
 
       if (feedback) {
         feedback.destroy();
-        return res.status(200).json({ msg: "Feedback deleted Successfully" });
-      } else return res.status(400).json({ error: "Feedback not found" });
+        return res.status(200).json({ msg: "FEEDBACK DELETE SUCCESSFULLY" });
+      } else return res.status(400).json({ error: "FEEDBACK NOT FOUND" });
     } catch (error) {
-      return res.status(400).json({ error: "Feedback delete error" });
+      return res.status(400).json({ error: "FEEDBACK DELETE ERROR" });
     }
   },
 };
