@@ -8,28 +8,25 @@ module.exports = {
   async index(req, res) {
     try {
       const query = await Member.findAll({
-        attributes: [
-          'name'
-        ],
-        include: [{
-          association: 'duties',
-          attributes: [
-            'elapsedTime'
-          ],
-          include: [{
-            association: 'feedback',
-            attributes: [
-              'id'
+        attributes: ["name"],
+        include: [
+          {
+            association: "duties",
+            attributes: ["elapsedTime"],
+            include: [
+              {
+                association: "feedback",
+                attributes: ["id"],
+              },
             ],
-          }]
-        }]
+          },
+        ],
       });
-      if (!query)
-        return res.status(404).json({ error: 'NOT FOUND' });
+      if (!query) return res.status(404).json({ error: "NOT FOUND" });
 
       return res.status(200).json(query);
     } catch (error) {
-      return res.status(400).json({ error: 'ERROR WHEN GETTING FEEDBACK' })
+      return res.status(400).json({ error: "ERROR WHEN GETTING FEEDBACK" });
     }
   },
 
@@ -133,6 +130,21 @@ module.exports = {
       });
 
       return res.status(200).json(feedback);
+    } catch (error) {
+      return res.status(400).json({ error });
+    }
+  },
+
+  async getId(req, res) {
+    const { feedbackId } = req.body;
+    if (!feedbackId || feedbackId == null || feedbackId == undefined)
+      return res.status(400).json({ error: "FEEDBACK ID IS INVALID" });
+
+    try {
+      const feedback = await Feedback.findByPk(feedbackId);
+
+      if (feedback) return res.status(200).json(feedback);
+      else return res.status(400).json({ error: "FEEDBACK NOT FOUND" });
     } catch (error) {
       return res.status(400).json({ error });
     }
