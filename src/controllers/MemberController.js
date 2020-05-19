@@ -21,8 +21,8 @@ setInterval(async () => {
     const member = await Member.findAll();
     if (member.length != 0) {
       for (i = 0; i < member.length; i++) {
-        if (member[0].flag == 1)
-          member[i].update({ flag: 0 });
+        if (member[0].isDutyDone == 1)
+          member[i].update({ isDutyDone: 0 });
       }
     }
   } catch (error) {
@@ -85,13 +85,13 @@ module.exports = {
 
       if (req.file) {
         const { key } = req.file;
-        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, image: key, dutyDate, dutyTime, flag: 0 });
+        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, image: key, dutyDate, dutyTime, isDutyDone: 0 });
         je.password = undefined;
         member.password = undefined;
         return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
       }
       else {
-        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, dutyDate, dutyTime, flag: 0 });
+        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, dutyDate, dutyTime, isDutyDone: 0 });
         je.password = undefined;
         member.password = undefined;
         return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
@@ -126,7 +126,7 @@ module.exports = {
   },
 
   async update(req, res) { //AQUI
-    const { id, name, board, password, position, sr, dutyDate, dutyTime, flag } = req.body;
+    const { id, name, board, password, position, sr, dutyDate, dutyTime, isDutyDone } = req.body;
     if (!password || password == null || password == undefined) errors.push({ error: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ error: 'NAME IS INVALID' })
     if (!board || board == null || board == undefined) errors.push({ error: 'BOARD IS INVALID' })
@@ -149,7 +149,7 @@ module.exports = {
             image: key,
             dutyDate: dutyDate,
             dutyTime: dutyTime,
-            flag: parseInt(flag),
+            isDutyDone: parseInt(isDutyDone),
           });
         }
         else
@@ -160,7 +160,7 @@ module.exports = {
             sr: sr,
             dutyDate: dutyDate,
             dutyTime: dutyTime,
-            flag: parseInt(flag),
+            isDutyDone: parseInt(isDutyDone),
           });
         member.password = undefined;
         return res.status(200).json(member);

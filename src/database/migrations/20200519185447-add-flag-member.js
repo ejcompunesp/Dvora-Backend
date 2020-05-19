@@ -5,7 +5,7 @@ module.exports = {
     // logic for transforming into the new state
     return queryInterface.addColumn(
       'Members',
-      'flag',
+      'isDutyDone',
       Sequelize.TINYINT
     );
 
@@ -15,7 +15,7 @@ module.exports = {
     // logic for reverting the changes
     return queryInterface.removeColumn(
       'Members',
-      'flag'
+      'isDutyDone'
     );
   }
 }
