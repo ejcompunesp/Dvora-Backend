@@ -19,10 +19,11 @@ const generateToken = (params = {}) => jwt.sign(params, authConfig.secretMember,
 setInterval(async () => {
   try {
     const member = await Member.findAll();
-    console.log(member);
-    for (i = 0; i < member.length; i++) {
-      if (member[0].flag == 1)
-        member[i].update({ flag: 0 });
+    if (member.length != 0) {
+      for (i = 0; i < member.length; i++) {
+        if (member[0].flag == 1)
+          member[i].update({ flag: 0 });
+      }
     }
   } catch (error) {
     console.log(error);
