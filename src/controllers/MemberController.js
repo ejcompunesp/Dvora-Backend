@@ -16,6 +16,20 @@ const generateToken = (params = {}) => jwt.sign(params, authConfig.secretMember,
   expiresIn: 86400, //um dia
 });
 
+setInterval(async () => {
+  try {
+    const member = await Member.findAll();
+    if (member.length != 0) {
+      for (i = 0; i < member.length; i++) {
+        if (member[0].isDutyDone == 1)
+          member[i].update({ isDutyDone: 0 });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}, 604800000); //uma semana
+
 module.exports = {
   async index(req, res) {
 
@@ -49,7 +63,7 @@ module.exports = {
   async store(req, res) {  //AQUI
     const { jeId } = req.params;
     if (!jeId || jeId == null || jeId == undefined) errors.push({ error: 'JE ID IS INVALID' })
-    const { email, password, name, board, position, sr, image, dutyDate, dutyTime } = req.body;
+    const { email, password, name, board, position, sr, dutyDate, dutyTime } = req.body;
     if (!email || email == null || email == undefined) errors.push({ error: 'EMAIL IS INVALID' })
     if (!password || password == null || password == undefined) errors.push({ error: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ error: 'NAME IS INVALID' })
@@ -71,13 +85,13 @@ module.exports = {
 
       if (req.file) {
         const { key } = req.file;
-        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, image: key, dutyDate, dutyTime });
+        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, image: key, dutyDate, dutyTime, isDutyDone: 0 });
         je.password = undefined;
         member.password = undefined;
         return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
       }
       else {
-        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, dutyDate, dutyTime });
+        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, dutyDate, dutyTime, isDutyDone: 0 });
         je.password = undefined;
         member.password = undefined;
         return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
@@ -112,8 +126,7 @@ module.exports = {
   },
 
   async update(req, res) { //AQUI
-    const { id, name, board, password, position, sr, image, dutyDate, dutyTime } = req.body;
-    if (!email || email == null || email == undefined) errors.push({ error: 'EMAIL IS INVALID' })
+    const { id, name, board, password, position, sr, dutyDate, dutyTime, isDutyDone } = req.body;
     if (!password || password == null || password == undefined) errors.push({ error: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ error: 'NAME IS INVALID' })
     if (!board || board == null || board == undefined) errors.push({ error: 'BOARD IS INVALID' })
@@ -136,6 +149,7 @@ module.exports = {
             image: key,
             dutyDate: dutyDate,
             dutyTime: dutyTime,
+            isDutyDone: parseInt(isDutyDone),
           });
         }
         else
@@ -146,6 +160,7 @@ module.exports = {
             sr: sr,
             dutyDate: dutyDate,
             dutyTime: dutyTime,
+            isDutyDone: parseInt(isDutyDone),
           });
         member.password = undefined;
         return res.status(200).json(member);
