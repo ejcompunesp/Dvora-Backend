@@ -6,8 +6,6 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
 
-const errors = []
-
 const { promisify } = require('util');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
@@ -60,7 +58,9 @@ module.exports = {
     }
   },
 
-  async store(req, res) {  //AQUI
+  async store(req, res) {
+    const errors = [];
+
     const { jeId } = req.params;
     if (!jeId || jeId == null || jeId == undefined) errors.push({ msg: 'JE ID IS INVALID' })
     const { email, password, name, board, position, sr, dutyDate, dutyTime } = req.body;
@@ -134,7 +134,9 @@ module.exports = {
     }
   },
 
-  async update(req, res) { //AQUI
+  async update(req, res) {
+    const errors = []
+
     const { id, name, board, password, position, sr, dutyDate, dutyTime, isDutyDone } = req.body;
     if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
