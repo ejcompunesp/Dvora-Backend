@@ -94,13 +94,13 @@ module.exports = {
 
       if (req.file) {
         const { key } = req.file;
-        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, image: key, dutyDate, dutyTime, isDutyDone: 0 });
+        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, image: key, isDutyDone: 0 });
         je.password = undefined;
         member.password = undefined;
         return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
       }
       else {
-        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, dutyDate, dutyTime, isDutyDone: 0 });
+        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, isDutyDone: 0 });
         je.password = undefined;
         member.password = undefined;
         return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
@@ -159,8 +159,6 @@ module.exports = {
             position: position,
             sr: sr,
             image: key,
-            dutyDate: dutyDate,
-            dutyTime: dutyTime,
             isDutyDone: parseInt(isDutyDone),
           });
         }
@@ -170,8 +168,6 @@ module.exports = {
             board: board,
             position: position,
             sr: sr,
-            dutyDate: dutyDate,
-            dutyTime: dutyTime,
             isDutyDone: parseInt(isDutyDone),
           });
         member.password = undefined;
