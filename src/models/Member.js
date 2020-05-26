@@ -10,8 +10,6 @@ class Member extends Model {
       position: DataTypes.STRING,
       sr: DataTypes.STRING,
       image: DataTypes.STRING,
-      dutyDate: DataTypes.DATE,
-      dutyTime: DataTypes.INTEGER,
       isDutyDone: DataTypes.TINYINT,
     },
       {
