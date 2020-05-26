@@ -110,6 +110,7 @@ module.exports = {
         const { key } = req.file;
         promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
       }
+      console.log({error})
       return res.status(400).json({ msg: 'MEMBER REGISTRATION ERROR' });
     }
   },
