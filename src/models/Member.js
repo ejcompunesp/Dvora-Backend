@@ -12,6 +12,7 @@ class Member extends Model {
       image: DataTypes.STRING,
       dutyDate: DataTypes.DATE,
       dutyTime: DataTypes.INTEGER,
+      isDutyDone: DataTypes.TINYINT,
     },
       {
         sequelize: connection
