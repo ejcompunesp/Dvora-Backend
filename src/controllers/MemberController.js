@@ -63,7 +63,7 @@ module.exports = {
 
     const { jeId } = req.params;
     if (!jeId || jeId == null || jeId == undefined) errors.push({ msg: 'JE ID IS INVALID' })
-    const { email, password, name, board, position, sr, dutyDate, dutyTime } = req.body;
+    const { email, password, name, board, position, sr,} = req.body;
     if (!email || email == null || email == undefined) errors.push({ msg: 'EMAIL IS INVALID' })
     if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
@@ -138,7 +138,7 @@ module.exports = {
   async update(req, res) {
     const errors = []
 
-    const { id, name, board, password, position, sr, dutyDate, dutyTime, isDutyDone } = req.body;
+    const { id, name, board, password, position, sr, isDutyDone } = req.body;
     if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
     if (!board || board == null || board == undefined) errors.push({ msg: 'BOARD IS INVALID' })
