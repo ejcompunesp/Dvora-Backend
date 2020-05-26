@@ -6,8 +6,6 @@ const path = require('path');
 const jwt = require('jsonwebtoken');
 const authConfig = require('../config/auth');
 
-const errors = []
-
 const { promisify } = require('util');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
@@ -35,18 +33,18 @@ module.exports = {
 
     const { jeId } = req.params;
     if (!jeId || jeId == undefined || jeId == null)
-      return res.status(400).json({ error: 'JE ID IS INVALID' })
+      return res.status(400).json({ msg: 'JE ID IS INVALID' })
 
     try {
       const je = await Je.findByPk(jeId);
       if (!je)
-        return res.status(404).json({ error: 'ENTERPRISE NOT FOUND' })
+        return res.status(404).json({ msg: 'ENTERPRISE NOT FOUND' })
 
       const members = await Member.findAll({
         where: { jeId }
       })
       if (members.length == 0)
-        return res.status(404).json({ error: 'NO MEMBER FOUND' })
+        return res.status(404).json({ msg: 'NO MEMBER FOUND' })
 
       je.password = undefined;
       for (let i = 0; i < members.length; i++)
@@ -56,18 +54,20 @@ module.exports = {
       return res.status(200).json({ je, members });
 
     } catch (error) {
-      return res.status(400).json({ error: 'ERROR WHEN GET MEMBER' });
+      return res.status(400).json({ msg: 'ERROR WHEN GET MEMBER' });
     }
   },
 
-  async store(req, res) {  //AQUI
+  async store(req, res) {
+    const errors = [];
+
     const { jeId } = req.params;
-    if (!jeId || jeId == null || jeId == undefined) errors.push({ error: 'JE ID IS INVALID' })
+    if (!jeId || jeId == null || jeId == undefined) errors.push({ msg: 'JE ID IS INVALID' })
     const { email, password, name, board, position, sr, dutyDate, dutyTime } = req.body;
-    if (!email || email == null || email == undefined) errors.push({ error: 'EMAIL IS INVALID' })
-    if (!password || password == null || password == undefined) errors.push({ error: 'PASSWORD IS INVALID' })
-    if (!name || name == null || name == undefined) errors.push({ error: 'NAME IS INVALID' })
-    if (!sr || sr == null || sr == undefined) errors.push({ error: 'SR IS INVALID' })
+    if (!email || email == null || email == undefined) errors.push({ msg: 'EMAIL IS INVALID' })
+    if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
+    if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
+    if (!sr || sr == null || sr == undefined) errors.push({ msg: 'SR IS INVALID' })
     if (errors.length > 0) return res.status(400).json(errors)
 
     try {
@@ -79,6 +79,15 @@ module.exports = {
           promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
         }
         return res.status(400).json({ msg: 'ENTERPRISE NOT FOUND' });
+      }
+
+      const query = await Member.findOne({ where: { email } });
+      if (query || je.email == email) {
+        if (req.file) {
+          const { key } = req.file;
+          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
+        }
+        return res.status(400).json({ msg: 'EMAIL ALREADY REGISTERED' });
       }
 
       const hash = generateHash(password);
@@ -101,14 +110,14 @@ module.exports = {
         const { key } = req.file;
         promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
       }
-      return res.status(400).json(error);
+      return res.status(400).json({ msg: 'MEMBER REGISTRATION ERROR' });
     }
   },
 
   async delete(req, res) {
     const { id } = req.body;
     if (!id || id == null || id == undefined)
-      return res.status(400).json({ error: 'MEMBER ID IS INVALID' })
+      return res.status(400).json({ msg: 'MEMBER ID IS INVALID' })
 
     try {
       const member = await Member.findByPk(id);
@@ -119,19 +128,21 @@ module.exports = {
         return res.status(200).json({ msg: 'MEMBER DELETED SUCCESSFULLY' });
       }
       else
-        return res.status(404).json({ error: 'MEMBER NOT FOUND' });
+        return res.status(404).json({ msg: 'MEMBER NOT FOUND' });
     } catch (error) {
-      return res.status(400).json({ error: 'MEMBER DELETE ERROR' });
+      return res.status(400).json({ msg: 'MEMBER DELETE ERROR' });
     }
   },
 
-  async update(req, res) { //AQUI
+  async update(req, res) {
+    const errors = []
+
     const { id, name, board, password, position, sr, dutyDate, dutyTime, isDutyDone } = req.body;
-    if (!password || password == null || password == undefined) errors.push({ error: 'PASSWORD IS INVALID' })
-    if (!name || name == null || name == undefined) errors.push({ error: 'NAME IS INVALID' })
-    if (!board || board == null || board == undefined) errors.push({ error: 'BOARD IS INVALID' })
-    if (!position || position == null || position == undefined) errors.push({ error: 'POSITION IS INVALID' })
-    if (!sr || sr == null || sr == undefined) errors.push({ error: 'SR IS INVALID' })
+    if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
+    if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
+    if (!board || board == null || board == undefined) errors.push({ msg: 'BOARD IS INVALID' })
+    if (!position || position == null || position == undefined) errors.push({ msg: 'POSITION IS INVALID' })
+    if (!sr || sr == null || sr == undefined) errors.push({ msg: 'SR IS INVALID' })
     if (errors.length > 0) return res.status(400).json(errors)
 
     try {
@@ -177,7 +188,7 @@ module.exports = {
         const { key } = req.file;
         promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
       }
-      return res.status(400).json(error);
+      return res.status(400).json({ msg: 'MEMBER UPDATE ERROR' });
     }
   },
 };

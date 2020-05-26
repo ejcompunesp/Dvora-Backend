@@ -17,7 +17,7 @@ module.exports = {
   async login(req, res) {
     const { email, password } = req.body;
     if (!email || !password || email == null || password == null || email == undefined || password == undefined)
-      return res.status(400).json({ error: 'EMAIL OR PASSWORD IS INVALID' })
+      return res.status(400).json({ msg: 'EMAIL OR PASSWORD IS INVALID' })
     try {
       let je = await Je.findOne({ where: { email } });
       if (je) {
@@ -38,7 +38,7 @@ module.exports = {
           }],
         });
         if (!je)
-          return res.status(404).json({ error: 'EMAIL NOT FOUND' });
+          return res.status(404).json({ msg: 'EMAIL NOT FOUND' });
         member = je.members[0];
         je.dataValues.members = undefined;
         let ok = validPassword(password, member.password);
@@ -51,7 +51,7 @@ module.exports = {
         return res.status(200).json({ je, member, token: generateTokenMember({ id: member.id }) });
       }
     } catch (error) {
-      return res.status(400).json(error);
+      return res.status(400).json({ msg: 'LOGIN ERROR' });
     }
   }
 };
