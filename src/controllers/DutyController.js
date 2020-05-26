@@ -5,6 +5,9 @@ const Moment = require('moment')
 const MomentRange = require('moment-range');
 const moment = MomentRange.extendMoment(Moment);
 
+const bcrypt = require('bcrypt');
+const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
+
 module.exports = {
   async index(req, res) {
 
@@ -22,7 +25,6 @@ module.exports = {
       member.password = undefined;
 
       if (member.duties.length == 0) return res.status(404).json({ msg: 'NO DUTIES FOUND' })
-
       return res.status(200).json({ member });
     } catch (error) {
       return res.status(400).json({ msg: 'ERROR WHEN GET DUTIES' })
@@ -40,13 +42,15 @@ module.exports = {
       });
 
       if (member == null) return res.status(404).json({ msg: 'EMAIL NOT FOUND' })
+      if (!validPassword(password, member.password))
+        return res.status(400).json({ error: 'INCORRECT PASSWORD' });
 
       const duty = await Duty.create({
         memberId: member.id,
         status: 0,
         elapsedTime: 0
       })
-
+      member.password = undefined;
       return res.status(201).json({ member, duty })
 
     } catch (error) {
