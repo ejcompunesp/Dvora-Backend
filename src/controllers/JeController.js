@@ -34,13 +34,14 @@ module.exports = {
   async store(req, res) {
     const errors = [];
 
-    const { name, email, password, university, image, city, creationYear } = req.body;
+    const { name, email, password, university, image, city, creationYear, dutyTime } = req.body;
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
     if (!email || email == null || email == undefined) errors.push({ msg: 'EMAIL IS INVALID' })
     if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!university || university == null || university == undefined) errors.push({ msg: 'UNIVERSITY IS INVALID' })
     if (!city || city == null || city == undefined) errors.push({ msg: 'CITY IS INVALID' })
     if (!creationYear || creationYear == null || creationYear == undefined) errors.push({ msg: 'CREATION YEAR IS INVALID' })
+    if (!dutyTime || dutyTime == null || dutyTime == undefined) errors.push({ msg: 'DUTY TIME IS INVALID' })
     if (errors.length > 0) return res.status(400).json(errors)
 
     hash = generateHash(password);
@@ -57,12 +58,29 @@ module.exports = {
 
       if (req.file) {
         const { key } = req.file;
-        const je = await Je.create({ name, email, password: hash, university, image: key, city, creationYear });
+        const je = await Je.create({ 
+          name, 
+          email, 
+          password: hash,
+          university, 
+          image: key, 
+          city, 
+          creationYear,
+          dutyTime,
+        });
         je.password = undefined;
         return res.status(200).json({ je, token: generateToken({ id: je.id }) });
       }
       else {
-        const je = await Je.create({ name, email, password: hash, university, city, creationYear });
+        const je = await Je.create({ 
+          name,
+          email, 
+          password: hash,
+          university, 
+          city, 
+          creationYear,
+          dutyTime
+        });
         je.password = undefined;
         return res.status(200).json({ je, token: generateToken({ id: je.id }) });
       }
@@ -98,13 +116,15 @@ module.exports = {
   async update(req, res) {
     const errors = [];
 
-    const { id, password, name, university, image, city, creationYear } = req.body;
+    const { id, name, email, password, university, image, city, creationYear, dutyTime } = req.body;
+    if (!id || id == null || id == undefined) errors.push({ msg: 'JE ID IS INVALID' }) 
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
     if (!email || email == null || email == undefined) errors.push({ msg: 'EMAIL IS INVALID' })
     if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!university || university == null || university == undefined) errors.push({ msg: 'UNIVERSITY IS INVALID' })
     if (!city || city == null || city == undefined) errors.push({ msg: 'CITY IS INVALID' })
     if (!creationYear || creationYear == null || creationYear == undefined) errors.push({ msg: 'CREATION YEAR IS INVALID' })
+    if (!dutyTime || dutyTime == null || dutyTime == undefined) errors.push({ msg: 'DUTY TIME IS INVALID' })
     if (errors.length > 0) return res.status(400).json(errors)
 
     try {
@@ -115,19 +135,23 @@ module.exports = {
           if (je.image)
             promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
           je.update({
-            name: name,
-            university: university,
-            image: key,
-            city: city,
-            creationYear: creationYear,
+            name,
+            email,
+            university,
+            image,
+            city,
+            creationYear,
+            dutyTime
           });
         }
         else {
           je.update({
-            name: name,
-            university: university,
-            city: city,
-            creationYear: creationYear,
+            name,
+            email,
+            university,
+            city,
+            creationYear,
+            dutyTime
           });
         }
         je.password = undefined;

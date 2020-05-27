@@ -5,7 +5,7 @@ module.exports = {
     return queryInterface.sequelize.transaction((t) => {
       return Promise.all([
         queryInterface.addColumn('Jes', 'dutyTime', {
-            type: Sequelize.INTEGER,
+            type: Sequelize.TIME,
             allowNull: true,
         }, { transaction: t })
       ])

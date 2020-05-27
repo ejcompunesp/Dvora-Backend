@@ -10,6 +10,7 @@ class Je extends Model {
       image: DataTypes.STRING,
       city: DataTypes.STRING,
       creationYear: DataTypes.STRING,
+      dutyTime: DataTypes.TIME
     },
       {
         sequelize: connection
