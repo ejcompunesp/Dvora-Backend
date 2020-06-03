@@ -2,8 +2,6 @@ const Feedback = require("../models/Feedback");
 const Duty = require("../models/Duty");
 const Member = require("../models/Member");
 
-const errors = [];
-
 module.exports = {
   async index(req, res) {
     try {
@@ -22,40 +20,43 @@ module.exports = {
           },
         ],
       });
-      if (!query) return res.status(404).json({ error: "NOT FOUND" });
+      if (!query) return res.status(404).json({ msg: "NOT FOUND" });
 
       return res.status(200).json(query);
     } catch (error) {
-      return res.status(400).json({ error: "ERROR WHEN GETTING FEEDBACK" });
+      console.log(error);
+      return res.status(500).json({ msg: "ERROR WHEN GETTING FEEDBACK" });
     }
   },
 
   async store(req, res) {
+    const errors = [];
+
     const { dutyId } = req.params;
 
     if (!dutyId || dutyId == null || dutyId == undefined)
-      errors.push({ error: "DUTY ID IS INVALID" });
+      errors.push({ msg: "DUTY ID IS INVALID" });
 
     const { satisfaction, productivity, mood, note, activity } = req.body;
 
     if (!satisfaction || satisfaction == null || satisfaction == undefined)
-      errors.push({ error: "SATISFACTION IS INVALID" });
+      errors.push({ msg: "SATISFACTION IS INVALID" });
     if (!productivity || productivity == null || productivity == undefined)
-      errors.push({ error: "PRODUCTIVITY IS INVALID" });
+      errors.push({ msg: "PRODUCTIVITY IS INVALID" });
     if (!mood || mood == null || mood == undefined)
-      errors.push({ error: "MOOD IS INVALID" });
+      errors.push({ msg: "MOOD IS INVALID" });
     if (!activity || activity == null || activity == undefined)
-      errors.push({ error: "ACTIVITY IS INVALID" });
+      errors.push({ msg: "ACTIVITY IS INVALID" });
     if (errors.length > 0) return res.status(400).json(errors);
 
     try {
       const duty = await Duty.findByPk(dutyId);
 
       if (duty == null)
-        return res.status(404).json({ error: "DUTY NOT FOUND" });
+        return res.status(404).json({ msg: "DUTY NOT FOUND" });
 
       if (duty.status == 0)
-        return res.status(400).json({ error: "DUTY NOT FINISHED" });
+        return res.status(400).json({ msg: "DUTY NOT FINISHED" });
 
       const feedback = await Feedback.create({
         dutyId: dutyId,
@@ -68,7 +69,8 @@ module.exports = {
 
       return res.status(200).json({ feedback, duty });
     } catch (error) {
-      return res.status(400).json({ error });
+      console.log(error);
+      return res.status(500).json({ msg: 'FEEDBACK CREATE ERROR' });
     }
   },
 
@@ -76,13 +78,13 @@ module.exports = {
     const { monitoring, feedbackId } = req.body;
 
     if (!monitoring || monitoring == null || monitoring == undefined)
-      errors.push({ error: "MONITORING IS INVALID" });
+      errors.push({ msg: "MONITORING IS INVALID" });
 
     try {
       const feedback = await Feedback.findByPk(feedbackId);
 
       if (!feedback)
-        return res.status(404).json({ error: "FEEDBACK NOT FOUND" });
+        return res.status(404).json({ msg: "FEEDBACK NOT FOUND" });
 
       feedback.update({
         monitoring: monitoring,
@@ -90,11 +92,14 @@ module.exports = {
 
       return res.status(200).json(feedback);
     } catch (error) {
-      return res.status(400).json({ error: "erro" });
+      console.log(error);
+      return res.status(500).json({ msg: "ERROR WHEN REGISTERING MONITORING" });
     }
   },
 
   async update(req, res) {
+    const errors = [];
+
     const {
       feedbackId,
       satisfaction,
@@ -106,20 +111,20 @@ module.exports = {
     console.log(req.body);
 
     if (!satisfaction || satisfaction == null || satisfaction == undefined)
-      errors.push({ error: "SATISFACTION IS INVALID" });
+      errors.push({ msg: "SATISFACTION IS INVALID" });
     if (!productivity || productivity == null || productivity == undefined)
-      errors.push({ error: "PRODUCTIVITY IS INVALID" });
+      errors.push({ msg: "PRODUCTIVITY IS INVALID" });
     if (!mood || mood == null || mood == undefined)
-      errors.push({ error: "MOOD IS INVALID" });
+      errors.push({ msg: "MOOD IS INVALID" });
     if (!activity || activity == null || activity == undefined)
-      errors.push({ error: "ACTIVITY IS INVALID" });
+      errors.push({ msg: "ACTIVITY IS INVALID" });
     if (errors.length > 0) return res.status(400).json(errors);
 
     try {
       const feedback = await Feedback.findByPk(feedbackId);
 
       if (!feedback)
-        return res.status(404).json({ error: "FEEDBACK NOT FOUND" });
+        return res.status(404).json({ msg: "FEEDBACK NOT FOUND" });
 
       feedback.update({
         satisfaction: satisfaction,
@@ -131,29 +136,31 @@ module.exports = {
 
       return res.status(200).json(feedback);
     } catch (error) {
-      return res.status(400).json({ error });
+      console.log(error);
+      return res.status(500).json({ msg: 'ERROR WHEN UPDATING FEEDBACK' });
     }
   },
 
   async getId(req, res) {
     const { feedbackId } = req.body;
     if (!feedbackId || feedbackId == null || feedbackId == undefined)
-      return res.status(400).json({ error: "FEEDBACK ID IS INVALID" });
+      return res.status(400).json({ msg: "FEEDBACK ID IS INVALID" });
 
     try {
       const feedback = await Feedback.findByPk(feedbackId);
 
       if (feedback) return res.status(200).json(feedback);
-      else return res.status(400).json({ error: "FEEDBACK NOT FOUND" });
+      else return res.status(400).json({ msg: "FEEDBACK NOT FOUND" });
     } catch (error) {
-      return res.status(400).json({ error });
+      console.log(error);
+      return res.status(500).json({ msg: 'ERROR WHEN GETTING FEEDBACK' });
     }
   },
 
   async delete(req, res) {
     const { feedbackId } = req.body;
     if (!feedbackId || feedbackId == null || feedbackId == undefined)
-      return res.status(400).json({ error: "FEEDBACK ID IS INVALID" });
+      return res.status(400).json({ msg: "FEEDBACK ID IS INVALID" });
 
     try {
       const feedback = await Feedback.findByPk(feedbackId);
@@ -161,9 +168,10 @@ module.exports = {
       if (feedback) {
         feedback.destroy();
         return res.status(200).json({ msg: "FEEDBACK DELETE SUCCESSFULLY" });
-      } else return res.status(400).json({ error: "FEEDBACK NOT FOUND" });
+      } else return res.status(400).json({ msg: "FEEDBACK NOT FOUND" });
     } catch (error) {
-      return res.status(400).json({ error: "FEEDBACK DELETE ERROR" });
+      console.log(error);
+      return res.status(500).json({ msg: "FEEDBACK DELETE ERROR" });
     }
   },
 };

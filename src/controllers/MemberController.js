@@ -54,7 +54,8 @@ module.exports = {
       return res.status(200).json({ je, members });
 
     } catch (error) {
-      return res.status(400).json({ msg: 'ERROR WHEN GET MEMBER' });
+      console.log(error);
+      return res.status(500).json({ msg: 'ERROR WHEN GET MEMBER' });
     }
   },
 
@@ -63,7 +64,7 @@ module.exports = {
 
     const { jeId } = req.params;
     if (!jeId || jeId == null || jeId == undefined) errors.push({ msg: 'JE ID IS INVALID' })
-    const { email, password, name, board, position, sr,} = req.body;
+    const { email, password, name, board, position, sr, } = req.body;
     if (!email || email == null || email == undefined) errors.push({ msg: 'EMAIL IS INVALID' })
     if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
@@ -110,8 +111,8 @@ module.exports = {
         const { key } = req.file;
         promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
       }
-      console.log({error})
-      return res.status(400).json({ msg: 'MEMBER REGISTRATION ERROR' });
+      console.log(error);
+      return res.status(500).json({ msg: 'MEMBER REGISTRATION ERROR' });
     }
   },
 
@@ -131,7 +132,8 @@ module.exports = {
       else
         return res.status(404).json({ msg: 'MEMBER NOT FOUND' });
     } catch (error) {
-      return res.status(400).json({ msg: 'MEMBER DELETE ERROR' });
+      console.log(error);
+      return res.status(500).json({ msg: 'MEMBER DELETE ERROR' });
     }
   },
 
@@ -185,7 +187,8 @@ module.exports = {
         const { key } = req.file;
         promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
       }
-      return res.status(400).json({ msg: 'MEMBER UPDATE ERROR' });
+      console.log(error);
+      return res.status(500).json({ msg: 'MEMBER UPDATE ERROR' });
     }
   },
 };
