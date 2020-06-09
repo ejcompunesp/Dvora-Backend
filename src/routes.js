@@ -7,8 +7,7 @@ const MemberController = require("./controllers/MemberController");
 const DutyController = require("./controllers/DutyController");
 const multerMiddleware = require("./middlewares/multer");
 const LoginController = require("./controllers/LoginController");
-const authJe = require("./middlewares/authJe");
-const authMember = require("./middlewares/authMember");
+const auth = require("./middlewares/auth");
 
 const routes = express.Router();
 
@@ -24,24 +23,25 @@ routes.post(
   multer(multerMiddleware).single("file"),
   JeController.store
 );
-routes.delete("/jes/delete", authJe, JeController.delete);
+routes.delete("/jes/delete", auth, JeController.delete);
 routes.put(
   "/jes/update",
-  authJe,
+  auth,
   multer(multerMiddleware).single("file"),
   JeController.update
 );
 
 routes.get("/jes/:jeId/members", MemberController.index);
 routes.post(
-  "/jes/:jeId/members/signup",
+  "/jes/members/signup",
+  auth,
   multer(multerMiddleware).single("file"),
   MemberController.store
 );
-routes.delete("/jes/:jeId/members/delete", authJe, MemberController.delete);
+routes.delete("/jes/members/delete", auth, MemberController.delete);
 routes.put(
-  "/jes/:jeId/members/update",
-  authMember,
+  "/jes/members/update",
+  auth,
   multer(multerMiddleware).single("file"),
   MemberController.update
 );
@@ -52,13 +52,13 @@ routes.put("/duties/:dutyId/finish", DutyController.update);
 
 routes.get("/feedback", FeedbackController.index);
 routes.post("/duties/:dutyId/feedback", FeedbackController.store);
-routes.delete("/duties/feedback/delete", authJe, FeedbackController.delete);
-routes.put("/duties/feedback/update", authMember, FeedbackController.update);
+routes.delete("/duties/feedback/delete", auth, FeedbackController.delete);
+routes.put("/duties/feedback/update", auth, FeedbackController.update);
 routes.put(
   "/duties/feedback/monitoring",
-  authJe,
+  auth,
   FeedbackController.updateMonitoring
 );
-routes.get("/duties/feedback/getId", authJe, FeedbackController.getId);
+routes.get("/duties/feedback/getId", auth, FeedbackController.getId);
 
 module.exports = routes;
