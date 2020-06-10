@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 
 const FeedbackController = require("./controllers/FeedbackController");
+const BoardController = require("./controllers/BoardController");
 const JeController = require("./controllers/JeController");
 const MemberController = require("./controllers/MemberController");
 const DutyController = require("./controllers/DutyController");
@@ -60,5 +61,11 @@ routes.put(
   FeedbackController.updateMonitoring
 );
 routes.get("/duties/feedback/getId", authJe, FeedbackController.getId);
+
+routes.get("/jes/:jeId/boards", BoardController.index)
+routes.post("/jes/:jeId/boards/register", BoardController.store)
+routes.delete("/jes/:jeId/boards/delete", BoardController.delete)
+routes.put("/jes/:jeId/boards/update", BoardController.update)
+
 
 module.exports = routes;
