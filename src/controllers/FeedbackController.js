@@ -75,6 +75,9 @@ module.exports = {
   async updateMonitoring(req, res) {
     const { monitoring, feedbackId } = req.body;
 
+    if (req.level !== 'je')
+      return res.status(401).json({ msg: 'NOT A JE TOKEN' });
+
     if (!monitoring || monitoring == null || monitoring == undefined)
       errors.push({ error: "MONITORING IS INVALID" });
 
@@ -152,8 +155,12 @@ module.exports = {
 
   async delete(req, res) {
     const { feedbackId } = req.body;
+
     if (!feedbackId || feedbackId == null || feedbackId == undefined)
       return res.status(400).json({ error: "FEEDBACK ID IS INVALID" });
+
+    if (req.level !== 'je')
+      return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
     try {
       const feedback = await Feedback.findByPk(feedbackId);
