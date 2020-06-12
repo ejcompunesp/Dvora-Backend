@@ -15,50 +15,32 @@ routes.get("/", (req, res) => {
   res.json({ ok: true });
 });
 
+//login
 routes.post("/login", LoginController.login);
 
+//je
 routes.get("/jes", JeController.index);
-routes.post(
-  "/jes/signup",
-  multer(multerMiddleware).single("file"),
-  JeController.store
-);
+routes.post("/jes/signup", multer(multerMiddleware).single("file"), JeController.store);
 routes.delete("/jes/delete", auth, JeController.delete);
-routes.put(
-  "/jes/update",
-  auth,
-  multer(multerMiddleware).single("file"),
-  JeController.update
-);
+routes.put("/jes/update", auth, multer(multerMiddleware).single("file"), JeController.update);
 
+//member
 routes.get("/jes/:jeId/members", MemberController.index);
-routes.post(
-  "/jes/members/signup",
-  auth,
-  multer(multerMiddleware).single("file"),
-  MemberController.store
-);
+routes.post("/jes/members/signup", auth, multer(multerMiddleware).single("file"), MemberController.store);
 routes.delete("/jes/members/delete", auth, MemberController.delete);
-routes.put(
-  "/jes/members/update",
-  auth,
-  multer(multerMiddleware).single("file"),
-  MemberController.update
-);
+routes.put("/jes/members/update", auth, multer(multerMiddleware).single("file"), MemberController.update);
 
+//duty
 routes.get("/duties/:memberId", DutyController.index);
 routes.post("/duties/register", DutyController.store);
 routes.put("/duties/:dutyId/finish", DutyController.update);
 
+//feedback
 routes.get("/feedback", FeedbackController.index);
 routes.post("/duties/:dutyId/feedback", FeedbackController.store);
 routes.delete("/duties/feedback/delete", auth, FeedbackController.delete);
 routes.put("/duties/feedback/update", auth, FeedbackController.update);
-routes.put(
-  "/duties/feedback/monitoring",
-  auth,
-  FeedbackController.updateMonitoring
-);
+routes.put("/duties/feedback/monitoring", auth, FeedbackController.updateMonitoring);
 routes.get("/duties/feedback/getId", auth, FeedbackController.getId);
 
 module.exports = routes;
