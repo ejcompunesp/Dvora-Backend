@@ -51,7 +51,7 @@ routes.post("/duties/register", DutyController.store);
 routes.put("/duties/:dutyId/finish", DutyController.update);
 
 routes.get("/feedback", FeedbackController.index);
-routes.post("/duties/:dutyId/feedback", FeedbackController.store);
+routes.post("/duties/:dutyId/feedback", authMember, FeedbackController.store);
 routes.delete("/duties/feedback/delete", authJe, FeedbackController.delete);
 routes.put("/duties/feedback/update", authMember, FeedbackController.update);
 routes.put(
