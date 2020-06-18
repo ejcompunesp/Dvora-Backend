@@ -18,6 +18,7 @@ module.exports = {
             return res.status(400).json({ msg: 'ERROR WHEN GET BOARDS' })
         }
     },
+    
 
     async store(req, res) {
         const { name } = req.body
