@@ -51,7 +51,8 @@ module.exports = {
         return res.status(200).json({ je, member, token: generateTokenMember({ id: member.id }) });
       }
     } catch (error) {
-      return res.status(400).json({ msg: 'LOGIN ERROR' });
+      console.log(error);
+      return res.status(500).json({ msg: 'LOGIN ERROR' });
     }
   }
 };

@@ -42,7 +42,7 @@ routes.post(
 routes.delete("/jes/:jeId/members/delete", authJe, MemberController.delete);
 routes.put(
   "/jes/:jeId/members/update",
-  authMember,
+  authJe,
   multer(multerMiddleware).single("file"),
   MemberController.update
 );
