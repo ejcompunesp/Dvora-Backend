@@ -39,10 +39,12 @@ module.exports = {
       const je = await Je.findByPk(jeId);
       if (!je)
         return res.status(404).json({ msg: 'ENTERPRISE NOT FOUND' })
-
+      
       const members = await Member.findAll({
-        where: { jeId }
+        where: { jeId },
+        include: { association: 'board' }
       })
+      console.log(members)
       if (members.length == 0)
         return res.status(404).json({ msg: 'NO MEMBER FOUND' })
 
@@ -54,7 +56,8 @@ module.exports = {
       return res.status(200).json({ je, members });
 
     } catch (error) {
-      return res.status(400).json({ msg: 'ERROR WHEN GET MEMBER' });
+      console.log(error);
+      return res.status(500).json({ msg: 'ERROR WHEN GET MEMBER' });
     }
   },
 
@@ -63,7 +66,8 @@ module.exports = {
 
     const { jeId } = req.params;
     if (!jeId || jeId == null || jeId == undefined) errors.push({ msg: 'JE ID IS INVALID' })
-    const { email, password, name, board, position, sr } = req.body;
+    const { email, password, name, boardId, position, sr} = req.body;
+    
     if (!email || email == null || email == undefined) errors.push({ msg: 'EMAIL IS INVALID' })
     if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
@@ -94,13 +98,13 @@ module.exports = {
 
       if (req.file) {
         const { key } = req.file;
-        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, image: key, isDutyDone: 0 });
+        const member = await Member.create({ jeId, name, email, password: hash, boardId, position, sr, image: key, isDutyDone: 0 });
         je.password = undefined;
         member.password = undefined;
         return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
       }
       else {
-        const member = await Member.create({ jeId, name, email, password: hash, board, position, sr, isDutyDone: 0 });
+        const member = await Member.create({ jeId, name, email, password: hash, boardId, position, sr, isDutyDone: 0 });
         je.password = undefined;
         member.password = undefined;
         return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
@@ -110,8 +114,8 @@ module.exports = {
         const { key } = req.file;
         promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
       }
-      console.log({ error })
-      return res.status(400).json({ msg: 'MEMBER REGISTRATION ERROR' });
+      console.log(error);
+      return res.status(500).json({ msg: 'MEMBER REGISTRATION ERROR' });
     }
   },
 
@@ -131,17 +135,18 @@ module.exports = {
       else
         return res.status(404).json({ msg: 'MEMBER NOT FOUND' });
     } catch (error) {
-      return res.status(400).json({ msg: 'MEMBER DELETE ERROR' });
+      console.log(error);
+      return res.status(500).json({ msg: 'MEMBER DELETE ERROR' });
     }
   },
 
   async update(req, res) {
     const errors = []
 
-    const { id, name, board, password, position, sr, isDutyDone } = req.body;
+    const { id, name, boardId, password, position, sr, isDutyDone } = req.body;
     if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
-    if (!board || board == null || board == undefined) errors.push({ msg: 'BOARD IS INVALID' })
+    if (!boardId || boardId == null || boardId == undefined) errors.push({ msg: 'BOARD ID IS INVALID' })
     if (!position || position == null || position == undefined) errors.push({ msg: 'POSITION IS INVALID' })
     if (!sr || sr == null || sr == undefined) errors.push({ msg: 'SR IS INVALID' })
     if (errors.length > 0) return res.status(400).json(errors)
@@ -155,7 +160,7 @@ module.exports = {
             promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', member.image));
           member.update({
             name: name,
-            board: board,
+            boardId: boardId,
             position: position,
             sr: sr,
             image: key,
@@ -165,7 +170,7 @@ module.exports = {
         else
           member.update({
             name: name,
-            board: board,
+            boardId: boardId,
             position: position,
             sr: sr,
             isDutyDone: parseInt(isDutyDone),
@@ -185,7 +190,8 @@ module.exports = {
         const { key } = req.file;
         promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
       }
-      return res.status(400).json({ msg: 'MEMBER UPDATE ERROR' });
+      console.log(error);
+      return res.status(500).json({ msg: 'MEMBER UPDATE ERROR' });
     }
   },
 };

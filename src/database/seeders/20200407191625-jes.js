@@ -13,7 +13,8 @@ module.exports = {
         city: 'Presidente Prudente - SP',
         creationYear: '2006',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        dutyTime: 2
       }, 
       {
         id: 2,
@@ -25,7 +26,8 @@ module.exports = {
         city: 'Presidente Prudente - SP',
         creationYear: '2009',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        dutyTime: 2
       }, 
       {
         id: 3,
@@ -37,7 +39,8 @@ module.exports = {
         city: 'Presidente Prudente - SP',
         creationYear: '2007',
         createdAt: new Date(),
-        updatedAt: new Date()
+        updatedAt: new Date(),
+        dutyTime: 2
       }
     ], {});
   },
