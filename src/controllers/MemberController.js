@@ -66,7 +66,6 @@ module.exports = {
 
     const { jeId } = req.params;
     if (!jeId || jeId == null || jeId == undefined) errors.push({ msg: 'JE ID IS INVALID' })
-    
     const { email, password, name, boardId, position, sr} = req.body;
     
     if (!email || email == null || email == undefined) errors.push({ msg: 'EMAIL IS INVALID' })
