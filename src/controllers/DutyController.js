@@ -27,7 +27,8 @@ module.exports = {
       if (member.duties.length == 0) return res.status(404).json({ msg: 'NO DUTIES FOUND' })
       return res.status(200).json({ member });
     } catch (error) {
-      return res.status(400).json({ msg: 'ERROR WHEN GET DUTIES' })
+      console.log(error);
+      return res.status(500).json({ msg: 'ERROR WHEN GET DUTIES' })
     }
   },
 
@@ -54,7 +55,8 @@ module.exports = {
       return res.status(201).json({ member, duty })
 
     } catch (error) {
-      return res.status(400).json({ msg: 'ERROR WHEN REGISTERING ON DUTY' });
+      console.log(error);
+      return res.status(500).json({ msg: 'ERROR WHEN REGISTERING ON DUTY' });
     }
   },
 
@@ -82,7 +84,8 @@ module.exports = {
       return res.status(200).json(duty);
 
     } catch (error) {
-      return res.status(400).json({ msg: 'ERROR WHEN ENDING DUTY' });
+      console.log(error);
+      return res.status(500).json({ msg: 'ERROR WHEN ENDING DUTY' });
     }
   },
 
