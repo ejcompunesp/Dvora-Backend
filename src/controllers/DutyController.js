@@ -6,6 +6,7 @@ const MomentRange = require('moment-range');
 const moment = MomentRange.extendMoment(Moment);
 
 const bcrypt = require('bcrypt');
+const { where } = require('sequelize');
 const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 
 module.exports = {
@@ -45,6 +46,14 @@ module.exports = {
       if (member == null) return res.status(404).json({ msg: 'EMAIL NOT FOUND' })
       if (!validPassword(password, member.password))
         return res.status(400).json({ error: 'INCORRECT PASSWORD' });
+
+      const dutyIfExist = await Duty.findAll({
+        where: { memberId: member.id }
+      })
+      dutyIfExist.forEach( function(iten) {
+        if (iten.status == 0) 
+          return res.status(404).json({ error: 'PLANTÃO JA INICIADO'})
+      })
 
       const duty = await Duty.create({
         memberId: member.id,
