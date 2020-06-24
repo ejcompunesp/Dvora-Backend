@@ -47,13 +47,7 @@ module.exports = {
       if (!validPassword(password, member.password))
         return res.status(400).json({ error: 'INCORRECT PASSWORD' });
 
-      const dutyIfExist = await Duty.findAll({
-        where: { memberId: member.id }
-      })
-      dutyIfExist.forEach( function(iten) {
-        if (iten.status == 0) 
-          return res.status(404).json({ error: 'PLANTÃO JA INICIADO'})
-      })
+      if (!member.isDutyDone) return res.status(409).json({ msg: 'ALREADY ON DUTY STARTED' })
 
       const duty = await Duty.create({
         memberId: member.id,
