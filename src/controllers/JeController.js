@@ -101,9 +101,8 @@ module.exports = {
   async update(req, res) {
     const errors = [];
 
-    const { id, password, name, university, image, city, creationYear } = req.body;
+    const { id, password, name, university, city, creationYear } = req.body;
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
-    if (!email || email == null || email == undefined) errors.push({ msg: 'EMAIL IS INVALID' })
     if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!university || university == null || university == undefined) errors.push({ msg: 'UNIVERSITY IS INVALID' })
     if (!city || city == null || city == undefined) errors.push({ msg: 'CITY IS INVALID' })
