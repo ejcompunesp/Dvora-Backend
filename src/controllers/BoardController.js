@@ -15,6 +15,7 @@ module.exports = {
             return res.status(404).json({ msg: 'ENTERPRISE NOT FOUND' })
         }
         catch (error) {
+            console.log(error);
             return res.status(400).json({ msg: 'ERROR WHEN GET BOARDS' })
         }
     },

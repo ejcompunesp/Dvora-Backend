@@ -14,7 +14,7 @@ const authMember = require("./middlewares/authMember");
 const routes = express.Router();
 
 routes.get("/", (req, res) => {
-  res.json({ ok: true });
+  res.json({ ok: false });
 });
 
 routes.post("/login", LoginController.login);
