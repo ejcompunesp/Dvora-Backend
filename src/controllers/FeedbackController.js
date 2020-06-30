@@ -2,8 +2,6 @@ const Feedback = require("../models/Feedback");
 const Duty = require("../models/Duty");
 const Member = require("../models/Member");
 
-const moment = require('moment-range').extendMoment(require('moment'));
-
 module.exports = {
   async index(req, res) {
     const { jeId } = req.body;
@@ -20,12 +18,12 @@ module.exports = {
         where: { jeId: jeId },
         include: [{
           association: 'duties',
-          where: { createdAt: { $between: [sunday, now] } },
-          include: [{ association: 'feedback', }]
+          createdAt: { $between: [sunday, now] },
+          include: [{ association: 'feedback' }]
         }]
       });
 
-      if (!members) return res.status(404).json({ msg: "NOT FOUND" });
+      if (members.length == 0) return res.status(404).json({ msg: "NOT FOUND" });
 
       members.forEach(member => {
         let ok = true;
@@ -47,7 +45,6 @@ module.exports = {
                 isMonitoringDone: false,
               });
               ok = false;
-              break;
             }
           });
           if (ok) {
