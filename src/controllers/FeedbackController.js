@@ -2,27 +2,66 @@ const Feedback = require("../models/Feedback");
 const Duty = require("../models/Duty");
 const Member = require("../models/Member");
 
+const moment = require('moment-range').extendMoment(require('moment'));
+
 module.exports = {
   async index(req, res) {
+    const { jeId } = req.body;
+    const vetMembers = [];
     try {
-      const query = await Member.findAll({
-        attributes: ["name"],
-        include: [
-          {
-            association: "duties",
-            attributes: ["elapsedTime"],
-            include: [
-              {
-                association: "feedback",
-                attributes: ["id"],
-              },
-            ],
-          },
-        ],
-      });
-      if (!query) return res.status(404).json({ msg: "NOT FOUND" });
+      const now = new Date();
+      const sunday = new Date();
+      sunday.setDate(sunday.getDate() - sunday.getDay());
+      sunday.setHours(0);
+      sunday.setMinutes(0);
+      sunday.setSeconds(0);
 
-      return res.status(200).json(query);
+      const members = await Member.findAll({
+        where: { jeId: jeId },
+        include: [{
+          association: 'duties',
+          where: { createdAt: { $between: [sunday, now] } },
+          include: [{ association: 'feedback', }]
+        }]
+      });
+
+      if (!members) return res.status(404).json({ msg: "NOT FOUND" });
+
+      members.forEach(member => {
+        let ok = true;
+        if (member.isDutyDone == 0) {
+          vetMembers.push({
+            id: member.id,
+            name: member.name,
+            isDutyDone: false,
+            isMonitoringDone: false,
+          });
+        }
+        else {
+          member.duties.forEach(duty => {
+            if (duty.feedback.isMonitoringDone == 0) {
+              vetMembers.push({
+                id: member.id,
+                name: member.name,
+                isDutyDone: true,
+                isMonitoringDone: false,
+              });
+              ok = false;
+              break;
+            }
+          });
+          if (ok) {
+            vetMembers.push({
+              id: member.id,
+              name: member.name,
+              isDutyDone: true,
+              isMonitoringDone: true,
+            });
+          }
+        }
+      });
+
+      return res.status(200).json(vetMembers);
     } catch (error) {
       console.log(error);
       return res.status(500).json({ msg: "ERROR WHEN GETTING FEEDBACK" });
@@ -91,7 +130,7 @@ module.exports = {
       return res.status(200).json(feedback);
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ msg: "ERROR WHEN REGISTERING MONITORING" });
+      return res.status(500).json({ msg: "ERROR WHEN UPDATING MONITORING" });
     }
   },
 
