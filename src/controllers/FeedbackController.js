@@ -142,7 +142,6 @@ module.exports = {
       note,
       activity,
     } = req.body;
-    console.log(req.body);
 
     if (!satisfaction || satisfaction == null || satisfaction == undefined)
       errors.push({ msg: "SATISFACTION IS INVALID" });
