@@ -65,6 +65,7 @@ module.exports = {
         mood,
         note,
         activity,
+        isMonitoringDone: 0,
       });
 
       return res.status(200).json({ feedback, duty });
@@ -75,10 +76,7 @@ module.exports = {
   },
 
   async updateMonitoring(req, res) {
-    const { monitoring, feedbackId } = req.body;
-
-    if (!monitoring || monitoring == null || monitoring == undefined)
-      errors.push({ msg: "MONITORING IS INVALID" });
+    const { feedbackId } = req.body;
 
     try {
       const feedback = await Feedback.findByPk(feedbackId);
@@ -87,7 +85,7 @@ module.exports = {
         return res.status(404).json({ msg: "FEEDBACK NOT FOUND" });
 
       feedback.update({
-        monitoring: monitoring,
+        isMonitoringDone: 1,
       });
 
       return res.status(200).json(feedback);
