@@ -87,6 +87,9 @@ module.exports = {
       if (!duty)
         return res.status(404).json({ msg: 'NOT FOUND' });
 
+      if (duty.status) 
+        return res.status(409).json({ msg: 'PREVIOUSLY COMPLETED DUTY' })  
+
       duty.update({
         status: 1,
         elapsedTime
