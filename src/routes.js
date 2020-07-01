@@ -61,6 +61,7 @@ routes.put(
   FeedbackController.updateMonitoring
 );
 routes.get("/duties/feedback/getId", authJe, FeedbackController.getId);
+routes.get('/member/duties', FeedbackController.getMemberDuties);
 
 routes.get("/jes/:jeId/boards", BoardController.index)
 routes.post("/jes/:jeId/boards/register", BoardController.store)

@@ -69,6 +69,27 @@ module.exports = {
     }
   },
 
+  async getMemberDuties(req, res) {
+    const { memberId } = req.body;
+    try {
+      const member = await Member.findByPk(memberId, {
+        include: [{
+          association: 'duties',
+          include: [{ association: 'feedback' }]
+        }]
+      });
+
+      if (!member)
+        return res.status(404).json({ msg: 'MEMBER NOT FOUND' });
+
+      member.password = undefined;
+      return res.status(200).json(member);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ msg: "ERROR WHEN GETTING MEMBER'S DUTIES" });
+    }
+  },
+
   async store(req, res) {
     const errors = [];
 
