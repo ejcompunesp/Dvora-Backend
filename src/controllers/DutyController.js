@@ -46,31 +46,14 @@ module.exports = {
 
       if (member == null) return res.status(404).json({ msg: 'EMAIL NOT FOUND' })
       if (!validPassword(password, member.password))
-        return res.status(400).json({ error: 'INCORRECT PASSWORD' });
-
-
-
-      // sequelize.query('SELECT MAX(?) FROM Duties;',
-      //   { replacements: ['createdAt'], type: sequelize.QueryTypes.SELECT }
-      // ).then(Duties => {
-      //   console.log(Duties)
-      //   return res.status(404).json({ error: 'PLANTÃO JA INICIADO'})
-      // })
-
-      // sequelize.query('SELECT * FROM Duties WHERE memberId = :member.id AND status = 0 ',
-      //   { replacements: { memberId: member.id }, type: sequelize.QueryTypes.SELECT }
-      // ).then(Duties => {
-      //   console.log(Duties)
-      //   return res.status(404).json({ error: 'PLANTÃO JA INICIADO'})
-      // })
+        return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
 
       const dutyIfExist = await Duty.findAll({
-        where: { memberId: member.id }
+        where: { memberId: member.id, status: 0 }
       })
-      dutyIfExist.forEach( function(iten) {
-        if (iten.status == 0) 
-          return res.status(404).json({ error: 'PLANTÃO JA INICIADO'})
-      })
+      console.log(dutyIfExist)
+      if (dutyIfExist.length) 
+        return res.status(409).json({ msg: 'PLANTÃO JA INICIADO'})
 
 
       const duty = await Duty.create({
@@ -79,9 +62,7 @@ module.exports = {
         elapsedTime: 0
       })
       member.password = undefined;
-      member.update({
-        isDutyDone: 0
-      })
+      
       return res.status(201).json({ member, duty })
 
     } catch (error) {
