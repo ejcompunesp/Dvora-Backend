@@ -5,6 +5,10 @@ const Member = require("../models/Member");
 module.exports = {
   async index(req, res) {
     const { jeId } = req.body;
+
+    if (!jeId || jeId === null || jeId === undefined)
+      return res.status(400).json({ msg: 'JE ID IS INVALID' });
+
     const vetMembers = [];
     try {
       const now = new Date();
@@ -27,7 +31,7 @@ module.exports = {
 
       members.forEach(member => {
         let ok = true;
-        if (member.isDutyDone == 0) { // se o plantao da semana nao foi feito
+        if (member.isDutyDone === 0) { // se o plantao da semana nao foi feito
           vetMembers.push({
             id: member.id,
             name: member.name,
@@ -37,7 +41,7 @@ module.exports = {
         }
         else {
           member.duties.forEach(duty => {
-            if (duty.feedback.isMonitoringDone == 0) { // se o monitoramento de algum plantao nao foi feito 
+            if (duty.feedback.isMonitoringDone === 0) { // se o monitoramento de algum plantao nao foi feito 
               vetMembers.push({
                 id: member.id,
                 name: member.name,
