@@ -27,7 +27,7 @@ module.exports = {
 
       members.forEach(member => {
         let ok = true;
-        if (member.isDutyDone == 0) {
+        if (member.isDutyDone == 0) { // se o plantao da semana nao foi feito
           vetMembers.push({
             id: member.id,
             name: member.name,
@@ -37,7 +37,7 @@ module.exports = {
         }
         else {
           member.duties.forEach(duty => {
-            if (duty.feedback.isMonitoringDone == 0) {
+            if (duty.feedback.isMonitoringDone == 0) { // se o monitoramento de algum plantao nao foi feito 
               vetMembers.push({
                 id: member.id,
                 name: member.name,
@@ -47,7 +47,7 @@ module.exports = {
               ok = false;
             }
           });
-          if (ok) {
+          if (ok) { // se todos os plantoes foram feitos os monitoramentos
             vetMembers.push({
               id: member.id,
               name: member.name,
