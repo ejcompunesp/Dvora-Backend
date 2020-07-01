@@ -37,6 +37,7 @@ module.exports = {
             name: member.name,
             isDutyDone: false,
             isMonitoringDone: false,
+            position: member.position,
           });
         }
         else {
@@ -47,6 +48,7 @@ module.exports = {
                 name: member.name,
                 isDutyDone: true,
                 isMonitoringDone: false,
+                position: member.position,
               });
               ok = false;
             }
@@ -57,6 +59,7 @@ module.exports = {
               name: member.name,
               isDutyDone: true,
               isMonitoringDone: true,
+              position: member.position,
             });
           }
         }
