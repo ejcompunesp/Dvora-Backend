@@ -4,28 +4,94 @@ const Member = require("../models/Member");
 
 module.exports = {
   async index(req, res) {
-    try {
-      const query = await Member.findAll({
-        attributes: ["name"],
-        include: [
-          {
-            association: "duties",
-            attributes: ["elapsedTime"],
-            include: [
-              {
-                association: "feedback",
-                attributes: ["id"],
-              },
-            ],
-          },
-        ],
-      });
-      if (!query) return res.status(404).json({ msg: "NOT FOUND" });
+    const { jeId } = req.body;
 
-      return res.status(200).json(query);
+    if (!jeId || jeId === null || jeId === undefined)
+      return res.status(400).json({ msg: 'JE ID IS INVALID' });
+
+    const vetMembers = [];
+    try {
+      const now = new Date();
+      const sunday = new Date();
+      sunday.setDate(sunday.getDate() - sunday.getDay());
+      sunday.setHours(0);
+      sunday.setMinutes(0);
+      sunday.setSeconds(0);
+
+      const members = await Member.findAll({
+        where: { jeId: jeId },
+        include: [{
+          association: 'duties',
+          createdAt: { $between: [sunday, now] },
+          include: [{ association: 'feedback' }]
+        }]
+      });
+
+      if (members.length == 0) return res.status(404).json({ msg: "NOT FOUND" });
+
+      members.forEach(member => {
+        let ok = true;
+        if (member.isDutyDone === 0) { // se o plantao da semana nao foi feito
+          vetMembers.push({
+            id: member.id,
+            name: member.name,
+            isDutyDone: false,
+            isMonitoringDone: false,
+            position: member.position,
+          });
+        }
+        else {
+          member.duties.forEach(duty => {
+            if (duty.feedback.isMonitoringDone === 0) { // se o monitoramento de algum plantao nao foi feito 
+              vetMembers.push({
+                id: member.id,
+                name: member.name,
+                isDutyDone: true,
+                isMonitoringDone: false,
+                position: member.position,
+              });
+              ok = false;
+            }
+          });
+          if (ok) { // se todos os plantoes foram feitos os monitoramentos
+            vetMembers.push({
+              id: member.id,
+              name: member.name,
+              isDutyDone: true,
+              isMonitoringDone: true,
+              position: member.position,
+            });
+          }
+        }
+      });
+
+      return res.status(200).json(vetMembers);
     } catch (error) {
       console.log(error);
       return res.status(500).json({ msg: "ERROR WHEN GETTING FEEDBACK" });
+    }
+  },
+
+  async getMemberDuties(req, res) {
+    const { memberId } = req.body;
+    if (!memberId || memberId === null || memberId === undefined)
+      return res.status(400).json({ msg: 'MEMBER ID IS INVALID' });
+    try {
+      const member = await Member.findByPk(memberId, {
+        include: [{
+          association: 'duties',
+          include: [{ association: 'feedback' }]
+        }]
+      });
+
+      if (!member)
+        return res.status(404).json({ msg: 'MEMBER NOT FOUND' });
+
+      member.password = undefined;
+      return res.status(200).json(member);
+    } catch (error) {
+      console.log(error);
+      return res.status(400).json({ msg: "ERROR WHEN GETTING MEMBER'S DUTIES" });
     }
   },
 
@@ -65,6 +131,7 @@ module.exports = {
         mood,
         note,
         activity,
+        isMonitoringDone: 0,
       });
 
       return res.status(200).json({ feedback, duty });
@@ -75,10 +142,7 @@ module.exports = {
   },
 
   async updateMonitoring(req, res) {
-    const { monitoring, feedbackId } = req.body;
-
-    if (!monitoring || monitoring == null || monitoring == undefined)
-      errors.push({ msg: "MONITORING IS INVALID" });
+    const { feedbackId } = req.body;
 
     try {
       const feedback = await Feedback.findByPk(feedbackId);
@@ -87,13 +151,13 @@ module.exports = {
         return res.status(404).json({ msg: "FEEDBACK NOT FOUND" });
 
       feedback.update({
-        monitoring: monitoring,
+        isMonitoringDone: 1,
       });
 
       return res.status(200).json(feedback);
     } catch (error) {
       console.log(error);
-      return res.status(500).json({ msg: "ERROR WHEN REGISTERING MONITORING" });
+      return res.status(500).json({ msg: "ERROR WHEN UPDATING MONITORING" });
     }
   },
 
@@ -108,7 +172,6 @@ module.exports = {
       note,
       activity,
     } = req.body;
-    console.log(req.body);
 
     if (!satisfaction || satisfaction == null || satisfaction == undefined)
       errors.push({ msg: "SATISFACTION IS INVALID" });

@@ -2,15 +2,14 @@ const { Model, DataTypes } = require("sequelize");
 
 class Feedback extends Model {
   static init(connection) {
-    super.init(
-      {
-        satisfaction: DataTypes.INTEGER,
-        productivity: DataTypes.INTEGER,
-        mood: DataTypes.INTEGER,
-        note: DataTypes.STRING,
-        activity: DataTypes.STRING,
-        monitoring: DataTypes.STRING,
-      },
+    super.init({
+      satisfaction: DataTypes.INTEGER,
+      productivity: DataTypes.INTEGER,
+      mood: DataTypes.INTEGER,
+      note: DataTypes.STRING,
+      activity: DataTypes.STRING,
+      isMonitoringDone: DataTypes.TINYINT,
+    },
       {
         sequelize: connection,
       }

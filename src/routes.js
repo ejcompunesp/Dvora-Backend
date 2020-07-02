@@ -51,7 +51,7 @@ routes.get("/duties/:memberId", DutyController.index);
 routes.post("/duties/register", DutyController.store);
 routes.put("/duties/:dutyId/finish", DutyController.update);
 
-routes.get("/feedback", FeedbackController.index);
+routes.get("/feedback", authJe, FeedbackController.index);
 routes.post("/duties/:dutyId/feedback", FeedbackController.store);
 routes.delete("/duties/feedback/delete", authJe, FeedbackController.delete);
 routes.put("/duties/feedback/update", authMember, FeedbackController.update);
@@ -61,6 +61,7 @@ routes.put(
   FeedbackController.updateMonitoring
 );
 routes.get("/duties/feedback/getId", authJe, FeedbackController.getId);
+routes.get('/member/feedback', FeedbackController.getMemberDuties);
 
 routes.get("/jes/:jeId/boards", BoardController.index)
 routes.post("/jes/:jeId/boards/register", BoardController.store)
