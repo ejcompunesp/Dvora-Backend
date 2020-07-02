@@ -15,18 +15,21 @@ const generateToken = (params = {}) => jwt.sign(params, authConfig.secretMember,
 });
 
 setInterval(async () => {
-  try {
-    const member = await Member.findAll();
-    if (member.length != 0) {
-      for (i = 0; i < member.length; i++) {
-        if (member[0].isDutyDone == 1)
-          member[i].update({ isDutyDone: 0 });
+  const now = new Date();
+  if (now.getDay() === 0) { //se eh domingo
+    try {
+      const member = await Member.findAll();
+      if (member.length != 0) {
+        for (i = 0; i < member.length; i++) {
+          if (member[i].isDutyDone == 1)
+            member[i].update({ isDutyDone: 0 });
+        }
       }
+    } catch (error) {
+      console.log(error);
     }
-  } catch (error) {
-    console.log(error);
   }
-}, 604800000); //uma semana
+}, 86400); //um dia
 
 module.exports = {
   async index(req, res) {
@@ -39,7 +42,7 @@ module.exports = {
       const je = await Je.findByPk(jeId);
       if (!je)
         return res.status(404).json({ msg: 'ENTERPRISE NOT FOUND' })
-      
+
       const members = await Member.findAll({
         where: { jeId },
         include: { association: 'board' }
@@ -66,8 +69,8 @@ module.exports = {
 
     const { jeId } = req.params;
     if (!jeId || jeId == null || jeId == undefined) errors.push({ msg: 'JE ID IS INVALID' })
-    const { email, password, name, boardId, position, sr} = req.body;
-    
+    const { email, password, name, boardId, position, sr } = req.body;
+
     if (!email || email == null || email == undefined) errors.push({ msg: 'EMAIL IS INVALID' })
     if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
