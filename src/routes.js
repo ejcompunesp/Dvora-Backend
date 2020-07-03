@@ -48,6 +48,7 @@ routes.put(
 );
 
 routes.get("/duties/:memberId", DutyController.index);
+routes.get("/duties/:jeId/today", DutyController.consult);
 routes.post("/duties/register", DutyController.store);
 routes.put("/duties/:dutyId/finish", DutyController.update);
 
