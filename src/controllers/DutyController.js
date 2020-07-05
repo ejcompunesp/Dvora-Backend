@@ -59,9 +59,11 @@ module.exports = {
       const dutiesToday = []
       for(let member=0; member<members.length; member++) {
         for (let duty=0; duty<members[member].duties.length; duty++) {
-          if (todayDate == moment(members[member].duties[duty].createdAt).format("MMM Do YY")) dutiesToday.push(members[member].duties[duty])
+          if (todayDate == moment(members[member].duties[duty].createdAt).format("MMM Do YY")) dutiesToday.push({ member: members[member].name, duty: members[member].duties[duty] })
+         
         }
-     }
+      }
+      //delete members['duties']
 
       if (!dutiesToday.length) return res.status(409).json({ msg: 'NO DUTY OPENED TODAY' })
 
