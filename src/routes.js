@@ -49,7 +49,7 @@ routes.put(
 
 routes.get("/duties/:memberId", DutyController.index);
 routes.post("/duties/register", DutyController.store);
-routes.put("/duties/:dutyId/finish", DutyController.update);
+routes.put("/duties/:dutyId/finish", authMember, DutyController.update);
 
 routes.get("/feedback", authJe, FeedbackController.index);
 routes.post("/duties/:dutyId/feedback", FeedbackController.store);
