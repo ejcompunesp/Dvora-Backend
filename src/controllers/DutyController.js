@@ -1,5 +1,6 @@
 const Duty = require('../models/Duty');
 const Member = require('../models/Member');
+const Je = require('../models/Je')
 
 const Moment = require('moment')
 const MomentRange = require('moment-range');
@@ -8,6 +9,7 @@ const moment = MomentRange.extendMoment(Moment);
 const bcrypt = require('bcrypt');
 const { where } = require('sequelize');
 const sequelize = require('sequelize');
+const { findAll } = require('../models/Duty');
 const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 
 module.exports = {
@@ -28,6 +30,45 @@ module.exports = {
 
       if (member.duties.length == 0) return res.status(404).json({ msg: 'NO DUTIES FOUND' })
       return res.status(200).json({ member });
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ msg: 'ERROR WHEN GET DUTIES' })
+    }
+  },
+
+  async consult(req, res) { 
+
+    const { jeId } = req.params
+    if (!jeId || jeId == null || jeId == undefined)
+      return res.status(400).json({ msg: 'JE ID IS INVALID' })
+
+    try {
+      const je = await Je.findByPk(jeId)
+      if (!je) return res.status(404).json({ msg: 'ENTERPRISE NOT FOUND' })
+
+      const members = await Member.findAll({
+        where: { 
+          jeId
+        },
+        include: { association: 'duties' }
+      })
+      if (!members.length)
+        return res.status(404).json({ msg: 'NO MEMBERS FOUND' })
+
+      todayDate = moment().format("MMM Do YY")
+      const dutiesToday = []
+      for(let member=0; member<members.length; member++) {
+        for (let duty=0; duty<members[member].duties.length; duty++) {
+          if (todayDate == moment(members[member].duties[duty].createdAt).format("MMM Do YY")) dutiesToday.push({ member: members[member].name, duty: members[member].duties[duty] })
+         
+        }
+      }
+      //delete members['duties']
+
+      if (!dutiesToday.length) return res.status(409).json({ msg: 'NO DUTY OPENED TODAY' })
+
+      return res.status(200).json({ dutiesToday })
+
     } catch (error) {
       console.log(error);
       return res.status(500).json({ msg: 'ERROR WHEN GET DUTIES' })
