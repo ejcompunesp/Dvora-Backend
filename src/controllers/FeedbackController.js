@@ -73,7 +73,7 @@ module.exports = {
   },
 
   async getMemberDuties(req, res) {
-    const { memberId } = req.body;
+    const { memberId } = req.params;
     if (!memberId || memberId === null || memberId === undefined)
       return res.status(400).json({ msg: 'MEMBER ID IS INVALID' });
     try {
