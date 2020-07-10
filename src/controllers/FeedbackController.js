@@ -50,6 +50,7 @@ module.exports = {
                 isMonitoringDone: 2,
                 position: member.position,
               })
+              ok = false;
               return;
             }
             else if (duty.feedback.isMonitoringDone === 0) { // se o monitoramento de algum plantao nao foi feito 
