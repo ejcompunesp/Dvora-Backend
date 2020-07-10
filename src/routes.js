@@ -52,7 +52,7 @@ routes.get("/duties/:jeId/today", DutyController.consult);
 routes.post("/duties/register", DutyController.store);
 routes.put("/duties/:dutyId/finish", authMember, DutyController.update);
 
-routes.get("/feedback", authJe, FeedbackController.index);
+routes.get("/feedback/:jeId", authJe, FeedbackController.index);
 routes.post("/duties/:dutyId/feedback", FeedbackController.store);
 routes.delete("/duties/feedback/delete", authJe, FeedbackController.delete);
 routes.put("/duties/feedback/update", authMember, FeedbackController.update);

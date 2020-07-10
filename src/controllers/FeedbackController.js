@@ -4,7 +4,7 @@ const Member = require("../models/Member");
 
 module.exports = {
   async index(req, res) {
-    const { jeId } = req.body;
+    const { jeId } = req.params;
 
     if (!jeId || jeId === null || jeId === undefined)
       return res.status(400).json({ msg: 'JE ID IS INVALID' });
