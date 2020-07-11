@@ -35,30 +35,42 @@ module.exports = {
           vetMembers.push({
             id: member.id,
             name: member.name,
-            isDutyDone: false,
-            isMonitoringDone: false,
+            isDutyDone: 0,
+            isMonitoringDone: 0,
             position: member.position,
           });
         }
         else {
           member.duties.forEach(duty => {
-            if (duty.feedback.isMonitoringDone === 0) { // se o monitoramento de algum plantao nao foi feito 
+            if (!duty.feedback) { // se o feedback nao foi respondido
               vetMembers.push({
                 id: member.id,
                 name: member.name,
-                isDutyDone: true,
-                isMonitoringDone: false,
+                isDutyDone: 1,
+                isMonitoringDone: 2,
+                position: member.position,
+              })
+              ok = false;
+              return;
+            }
+            else if (duty.feedback.isMonitoringDone === 0) { // se o monitoramento de algum plantao nao foi feito 
+              vetMembers.push({
+                id: member.id,
+                name: member.name,
+                isDutyDone: 1,
+                isMonitoringDone: 0,
                 position: member.position,
               });
               ok = false;
+              return;
             }
           });
           if (ok) { // se todos os plantoes foram feitos os monitoramentos
             vetMembers.push({
               id: member.id,
               name: member.name,
-              isDutyDone: true,
-              isMonitoringDone: true,
+              isDutyDone: 1,
+              isMonitoringDone: 1,
               position: member.position,
             });
           }
