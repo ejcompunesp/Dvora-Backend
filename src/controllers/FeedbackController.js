@@ -42,7 +42,7 @@ module.exports = {
         }
         else {
           member.duties.forEach(duty => {
-            if (!duty.feedback) { // se o feedback nao foi respondido
+            if (!duty.feedback && ok) { // se o feedback nao foi respondido
               vetMembers.push({
                 id: member.id,
                 name: member.name,
@@ -53,16 +53,18 @@ module.exports = {
               ok = false;
               return;
             }
-            else if (duty.feedback.isMonitoringDone === 0) { // se o monitoramento de algum plantao nao foi feito 
-              vetMembers.push({
-                id: member.id,
-                name: member.name,
-                isDutyDone: 1,
-                isMonitoringDone: 0,
-                position: member.position,
-              });
-              ok = false;
-              return;
+            else if (ok) {
+              if (duty.feedback.isMonitoringDone === 0) { // se o monitoramento de algum plantao nao foi feito 
+                vetMembers.push({
+                  id: member.id,
+                  name: member.name,
+                  isDutyDone: 1,
+                  isMonitoringDone: 0,
+                  position: member.position,
+                });
+                ok = false;
+                return;
+              }
             }
           });
           if (ok) { // se todos os plantoes foram feitos os monitoramentos
