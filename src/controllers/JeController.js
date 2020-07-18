@@ -119,6 +119,7 @@ module.exports = {
             promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
           je.update({
             name: name,
+            password: password,
             university: university,
             image: key,
             city: city,
@@ -128,6 +129,7 @@ module.exports = {
         else {
           je.update({
             name: name,
+            password: password,
             university: university,
             city: city,
             creationYear: creationYear,
