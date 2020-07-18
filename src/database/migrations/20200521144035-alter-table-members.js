@@ -14,7 +14,7 @@ module.exports = {
           type: Sequelize.STRING,
         }, { transaction: t }),
         queryInterface.removeColumn('Members', 'dutyDate', { transaction: t }),
-        queryInterface.removeColumn('Members', 'dutyTime', { transaction: t })
+        queryInterface.removeColumn('Members', 'dutyTime', { transaction: t }),
       ])
     })
   },

@@ -27,7 +27,8 @@ module.exports = {
         return res.status(200).json(jes);
       }
     } catch (error) {
-      return res.status(400).json({ msg: 'ERROR WHEN GET JES' });
+      console.log(error);
+      return res.status(500).json({ msg: 'ERROR WHEN GET JES' });
     }
   },
 
@@ -71,7 +72,8 @@ module.exports = {
         const { key } = req.file;
         promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', key));
       }
-      return res.status(400).json({ msg: 'JE REGISTRATION ERROR' });
+      console.log(error);
+      return res.status(500).json({ msg: 'JE REGISTRATION ERROR' });
     }
   },
 
@@ -89,14 +91,15 @@ module.exports = {
       else
         return res.status(400).json({ msg: 'JE NOT FOUND' });
     } catch (error) {
-      return res.status(400).json({ msg: 'JE DELETE ERROR' });
+      console.log(error);
+      return res.status(500).json({ msg: 'JE DELETE ERROR' });
     }
   },
 
   async update(req, res) {
     const errors = [];
 
-    const { password, name, university, image, city, creationYear } = req.body;
+    const { password, name, university, city, creationYear } = req.body;
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
     if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!university || university == null || university == undefined) errors.push({ msg: 'UNIVERSITY IS INVALID' })
@@ -145,7 +148,8 @@ module.exports = {
         const { key } = req.file;
         promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', key));
       }
-      return res.status(400).json({ msg: 'JE UPDATE ERROR' });
+      console.log(error);
+      return res.status(500).json({ msg: 'JE UPDATE ERROR' });
     }
   },
 };

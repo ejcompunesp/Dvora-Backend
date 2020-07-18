@@ -2,6 +2,7 @@ const express = require("express");
 const multer = require("multer");
 
 const FeedbackController = require("./controllers/FeedbackController");
+const BoardController = require("./controllers/BoardController");
 const JeController = require("./controllers/JeController");
 const MemberController = require("./controllers/MemberController");
 const DutyController = require("./controllers/DutyController");
@@ -26,21 +27,30 @@ routes.put("/jes/update", auth, multer(multerMiddleware).single("file"), JeContr
 
 //member
 routes.get("/jes/:jeId/members", MemberController.index);
-routes.post("/jes/members/signup", auth, multer(multerMiddleware).single("file"), MemberController.store);
-routes.delete("/jes/members/delete", auth, MemberController.delete);
-routes.put("/jes/members/update", auth, multer(multerMiddleware).single("file"), MemberController.update);
+routes.post("/jes/:jeId/members/signup", multer(multerMiddleware).single("file"), MemberController.store);
+routes.delete("/jes/:jeId/members/delete", auth, MemberController.delete);
+routes.put("/jes/:jeId/members/update", auth, multer(multerMiddleware).single("file"), MemberController.update);
 
 //duty
 routes.get("/duties/:memberId", DutyController.index);
+routes.get("/duties/:jeId/today", DutyController.consult);
 routes.post("/duties/register", DutyController.store);
-routes.put("/duties/:dutyId/finish", DutyController.update);
+routes.put("/duties/:dutyId/finish", auth, DutyController.update);
 
 //feedback
-routes.get("/feedback", FeedbackController.index);
+routes.get("/feedback/:jeId", auth, FeedbackController.index);
 routes.post("/duties/:dutyId/feedback", FeedbackController.store);
 routes.delete("/duties/feedback/delete", auth, FeedbackController.delete);
 routes.put("/duties/feedback/update", auth, FeedbackController.update);
 routes.put("/duties/feedback/monitoring", auth, FeedbackController.updateMonitoring);
 routes.get("/duties/feedback/getId", auth, FeedbackController.getId);
+routes.get('/member/:memberId/feedback', FeedbackController.getMemberDuties);
+
+//board
+routes.get("/jes/:jeId/boards", BoardController.index)
+routes.post("/jes/:jeId/boards/register", BoardController.store)
+routes.delete("/jes/:jeId/boards/delete", BoardController.delete)
+routes.put("/jes/:jeId/boards/update", BoardController.update)
+
 
 module.exports = routes;
