@@ -109,6 +109,8 @@ module.exports = {
     if (!creationYear || creationYear == null || creationYear == undefined) errors.push({ msg: 'CREATION YEAR IS INVALID' })
     if (errors.length > 0) return res.status(400).json(errors)
 
+    const hash = generateHash(password);
+
     try {
       const je = await Je.findByPk(id);
       if (je) {
@@ -118,7 +120,7 @@ module.exports = {
             promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
           je.update({
             name: name,
-            password: password,
+            password: hash,
             university: university,
             image: key,
             city: city,
@@ -128,7 +130,7 @@ module.exports = {
         else {
           je.update({
             name: name,
-            password: password,
+            password: hash,
             university: university,
             city: city,
             creationYear: creationYear,
