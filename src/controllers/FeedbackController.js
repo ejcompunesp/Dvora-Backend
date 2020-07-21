@@ -202,6 +202,9 @@ module.exports = {
       errors.push({ msg: "ACTIVITY IS INVALID" });
     if (errors.length > 0) return res.status(400).json(errors);
 
+    if (req.level !== "member")
+      return res.status(401).json({ msg: 'NOT A MEMBER TOKEN' });
+
     try {
       const feedback = await Feedback.findByPk(feedbackId);
 
