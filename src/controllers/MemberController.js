@@ -148,7 +148,7 @@ module.exports = {
   async update(req, res) {
     const errors = []
 
-    const { memberId, name, boardId, password, position, sr, isDutyDone } = req.body;
+    const { id, name, boardId, password, position, sr, isDutyDone } = req.body;
     if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
     if (!boardId || boardId == null || boardId == undefined) errors.push({ msg: 'BOARD ID IS INVALID' })
@@ -160,7 +160,7 @@ module.exports = {
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
     try {
-      const member = await Member.findByPk(memberId);
+      const member = await Member.findByPk(id);
       if (member) {
         if (req.file) {
           const { key } = req.file;
