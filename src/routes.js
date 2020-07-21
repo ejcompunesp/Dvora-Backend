@@ -28,8 +28,8 @@ routes.put("/jes/update", auth, multer(multerMiddleware).single("file"), JeContr
 //member
 routes.get("/jes/:jeId/members", MemberController.index);
 routes.post("/jes/members/signup", auth, multer(multerMiddleware).single("file"), MemberController.store);
-routes.delete("/jes/:jeId/members/delete", auth, MemberController.delete);
-routes.put("/jes/:jeId/members/update", auth, multer(multerMiddleware).single("file"), MemberController.update);
+routes.delete("/jes/members/delete", auth, MemberController.delete);
+routes.put("/jes/members/update", auth, multer(multerMiddleware).single("file"), MemberController.update);
 
 //duty
 routes.get("/duties/:memberId", DutyController.index);
