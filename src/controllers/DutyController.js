@@ -7,9 +7,6 @@ const MomentRange = require('moment-range');
 const moment = MomentRange.extendMoment(Moment);
 
 const bcrypt = require('bcrypt');
-const { where } = require('sequelize');
-const sequelize = require('sequelize');
-const { findAll } = require('../models/Duty');
 const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 
 module.exports = {
@@ -36,7 +33,7 @@ module.exports = {
     }
   },
 
-  async consult(req, res) { 
+  async consult(req, res) {
 
     const { jeId } = req.params
     if (!jeId || jeId == null || jeId == undefined)
@@ -47,7 +44,7 @@ module.exports = {
       if (!je) return res.status(404).json({ msg: 'ENTERPRISE NOT FOUND' })
 
       const members = await Member.findAll({
-        where: { 
+        where: {
           jeId
         },
         include: { association: 'duties' }
@@ -57,10 +54,10 @@ module.exports = {
 
       todayDate = moment().format("MMM Do YY")
       const dutiesToday = []
-      for(let member=0; member<members.length; member++) {
-        for (let duty=0; duty<members[member].duties.length; duty++) {
+      for (let member = 0; member < members.length; member++) {
+        for (let duty = 0; duty < members[member].duties.length; duty++) {
           if (todayDate == moment(members[member].duties[duty].createdAt).format("MMM Do YY")) dutiesToday.push({ member: members[member].name, duty: members[member].duties[duty] })
-         
+
         }
       }
       //delete members['duties']
@@ -93,8 +90,8 @@ module.exports = {
         where: { memberId: member.id, status: 0 }
       })
       console.log(dutyIfExist)
-      if (dutyIfExist.length) 
-        return res.status(409).json({ msg: 'PLANTÃO JA INICIADO'})
+      if (dutyIfExist.length)
+        return res.status(409).json({ msg: 'PLANTÃO JA INICIADO' })
 
 
       const duty = await Duty.create({
@@ -103,7 +100,7 @@ module.exports = {
         elapsedTime: 0
       })
       member.password = undefined;
-      
+
       return res.status(201).json({ member, duty })
 
     } catch (error) {
@@ -128,8 +125,8 @@ module.exports = {
       if (!duty)
         return res.status(404).json({ msg: 'NOT FOUND' });
 
-      if (duty.status) 
-        return res.status(409).json({ msg: 'PREVIOUSLY COMPLETED DUTY' })  
+      if (duty.status)
+        return res.status(409).json({ msg: 'PREVIOUSLY COMPLETED DUTY' })
 
       duty.update({
         status: 1,
@@ -137,7 +134,7 @@ module.exports = {
       })
 
       const member = await Member.findByPk(duty.memberId)
-      if (!member) 
+      if (!member)
         return res.status(404).json({ msg: 'MEMBER NOT FOUND' })
 
       member.update({
