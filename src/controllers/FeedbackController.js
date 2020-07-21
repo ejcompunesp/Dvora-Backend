@@ -228,6 +228,9 @@ module.exports = {
     if (!feedbackId || feedbackId == null || feedbackId == undefined)
       return res.status(400).json({ msg: "FEEDBACK ID IS INVALID" });
 
+    if (req.level !== 'je')
+      return res.status(401).json({ msg: 'NOT A JE TOKEN' });
+
     try {
       const feedback = await Feedback.findByPk(feedbackId);
 
