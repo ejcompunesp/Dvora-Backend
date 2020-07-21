@@ -4,10 +4,9 @@ const Member = require("../models/Member");
 
 module.exports = {
   async index(req, res) {
-    const { jeId } = req.params;
 
-    if (!jeId || jeId === null || jeId === undefined)
-      return res.status(400).json({ msg: 'JE ID IS INVALID' });
+    if (req.level !== 'je')
+      return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
     const vetMembers = [];
     try {
@@ -19,7 +18,7 @@ module.exports = {
       sunday.setSeconds(0);
 
       const members = await Member.findAll({
-        where: { jeId: jeId },
+        where: { jeId: req.id },
         include: [{
           association: 'duties',
           createdAt: { $between: [sunday, now] },
