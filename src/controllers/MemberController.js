@@ -102,13 +102,13 @@ module.exports = {
 
       if (req.file) {
         const { key } = req.file;
-        const member = await Member.create({ jeId, name, email, password: hash, boardId, position, sr, image: key, isDutyDone: 0 });
+        const member = await Member.create({ jeId: req.id, name, email, password: hash, boardId, position, sr, image: key, isDutyDone: 0 });
         je.password = undefined;
         member.password = undefined;
         return res.status(200).json({ je, member, token: generateToken({ id: member.id, level: 'member' }) });
       }
       else {
-        const member = await Member.create({ jeId, name, email, password: hash, boardId, position, sr, isDutyDone: 0 });
+        const member = await Member.create({ jeId: req.id, name, email, password: hash, boardId, position, sr, isDutyDone: 0 });
         je.password = undefined;
         member.password = undefined;
         return res.status(200).json({ je, member, token: generateToken({ id: member.id, level: 'member' }) });
