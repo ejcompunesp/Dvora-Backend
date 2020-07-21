@@ -34,7 +34,7 @@ routes.put("/jes/members/update", auth, multer(multerMiddleware).single("file"),
 //duty
 routes.get("/duties/:memberId", DutyController.index);
 routes.get("/duties/:jeId/today", DutyController.consult);
-routes.post("/duties/register", DutyController.store);
+routes.post("/duties/register", auth, DutyController.store);
 routes.put("/duties/:dutyId/finish", auth, DutyController.update);
 
 //feedback

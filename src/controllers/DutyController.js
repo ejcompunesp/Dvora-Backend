@@ -140,9 +140,6 @@ module.exports = {
     if (dutyId == null)
       return res.status(400).json({ msg: 'DUTY ID IS INVALID' })
 
-    if (req.level !== "member")
-      return res.status(401).json({ msg: 'NOT A MEMBER TOKEN' });
-
     const dutyAct = await Duty.findByPk(dutyId)
 
     const end = moment()
