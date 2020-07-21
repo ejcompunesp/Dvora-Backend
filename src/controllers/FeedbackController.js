@@ -155,13 +155,10 @@ module.exports = {
   },
 
   async updateMonitoring(req, res) {
-    const { monitoring, feedbackId } = req.body;
+    const { feedbackId } = req.body;
 
     if (req.level !== 'je')
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
-
-    if (!monitoring || monitoring == null || monitoring == undefined)
-      errors.push({ error: "MONITORING IS INVALID" });
 
     try {
       const feedback = await Feedback.findByPk(feedbackId);
