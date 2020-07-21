@@ -73,39 +73,65 @@ module.exports = {
   },
 
   async store(req, res) {
-    const { email, password } = req.body;
-    if (!email || email == null || email == undefined || !password || password == null || password == undefined)
-      return res.status(400).json({ msg: 'EMAIL OR PASSWORD IS INVALID' })
+    if (req.level === 'je') {
 
-    try {
-      const member = await Member.findOne({
-        where: { email }
-      });
+      const { email, password } = req.body;
+      if (!email || email == null || email == undefined || !password || password == null || password == undefined)
+        return res.status(400).json({ msg: 'EMAIL OR PASSWORD IS INVALID' })
 
-      if (member == null) return res.status(404).json({ msg: 'EMAIL NOT FOUND' })
-      if (!validPassword(password, member.password))
-        return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
+      try {
+        const member = await Member.findOne({
+          where: { email }
+        });
 
-      const dutyIfExist = await Duty.findAll({
-        where: { memberId: member.id, status: 0 }
-      })
-      console.log(dutyIfExist)
-      if (dutyIfExist.length)
-        return res.status(409).json({ msg: 'PLANTÃO JA INICIADO' })
+        if (member == null) return res.status(404).json({ msg: 'EMAIL NOT FOUND' })
+        if (!validPassword(password, member.password))
+          return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
+
+        const dutyIfExist = await Duty.findAll({
+          where: { memberId: member.id, status: 0 }
+        })
+        console.log(dutyIfExist)
+        if (dutyIfExist.length)
+          return res.status(409).json({ msg: 'PLANTÃO JA INICIADO' })
 
 
-      const duty = await Duty.create({
-        memberId: member.id,
-        status: 0,
-        elapsedTime: 0
-      })
-      member.password = undefined;
+        const duty = await Duty.create({
+          memberId: member.id,
+          status: 0,
+          elapsedTime: 0
+        })
+        member.password = undefined;
 
-      return res.status(201).json({ member, duty })
+        return res.status(201).json({ member, duty })
 
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ msg: 'ERROR WHEN REGISTERING ON DUTY' });
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ msg: 'ERROR WHEN REGISTERING ON DUTY' });
+      }
+    }
+    else {
+      try {
+        const dutyIfExist = await Duty.findAll({
+          where: { memberId: req.id, status: 0 }
+        });
+        if (dutyIfExist.length)
+          return res.status(409).json({ msg: 'DUTY ALREADY STARTED' });
+
+        const duty = await Duty.create({
+          memberId: req.id,
+          status: 0,
+          elapsedTime: 0
+        });
+
+        const member = await Member.findByPk(req.id);
+        member.password - undefined;
+
+        return res.status(200).json({ member, duty });
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ msg: 'ERROR WHEN REGISTERING ON DUTY' });
+      }
     }
   },
 
