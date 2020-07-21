@@ -38,7 +38,7 @@ routes.post("/duties/register", DutyController.store);
 routes.put("/duties/:dutyId/finish", auth, DutyController.update);
 
 //feedback
-routes.get("/feedback/:jeId", auth, FeedbackController.index);
+routes.get("/feedback", auth, FeedbackController.index);
 routes.post("/duties/:dutyId/feedback", FeedbackController.store);
 routes.delete("/duties/feedback/delete", auth, FeedbackController.delete);
 routes.put("/duties/feedback/update", auth, FeedbackController.update);
