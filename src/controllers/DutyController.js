@@ -86,7 +86,7 @@ module.exports = {
 
         if (member == null) return res.status(404).json({ msg: 'EMAIL NOT FOUND' })
         if (!validPassword(password, member.password))
-          return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
+          return res.status(401).json({ msg: 'INCORRECT PASSWORD' });
 
         const dutyIfExist = await Duty.findAll({
           where: { memberId: member.id, status: 0 }
@@ -103,7 +103,7 @@ module.exports = {
         })
         member.password = undefined;
 
-        return res.status(201).json({ member, duty })
+        return res.status(200).json({ member, duty })
 
       } catch (error) {
         console.log(error);
@@ -125,7 +125,7 @@ module.exports = {
         });
 
         const member = await Member.findByPk(req.id);
-        member.password - undefined;
+        member.password = undefined;
 
         return res.status(200).json({ member, duty });
       } catch (error) {
@@ -136,42 +136,84 @@ module.exports = {
   },
 
   async update(req, res) {
-    const { dutyId } = req.params;
-    if (dutyId == null)
-      return res.status(400).json({ msg: 'DUTY ID IS INVALID' })
+    if (req.level === 'je') {
+      const { id, password } = req.body;
 
-    const dutyAct = await Duty.findByPk(dutyId)
+      if (!id || id === null || id === undefined || !password || password === null || password === undefined)
+        return res.status(400).json({ msg: 'ID OR PASSWORD IS INVALID' });
 
-    const end = moment()
-    const start = moment(dutyAct.createdAt)
-    const elapsedTime = moment.range(start, end).diff('seconds')
+      try {
+        const member = await Member.findByPk(id, {
+          include: {
+            association: 'duties',
+            where: { status: 0 }
+          }
+        });
 
-    try {
-      const duty = await Duty.findByPk(dutyId)
-      if (!duty)
-        return res.status(404).json({ msg: 'NOT FOUND' });
+        if (!member)
+          return res.status(404).json({ msg: 'MEMBER NOT FOUND' });
 
-      if (duty.status)
-        return res.status(409).json({ msg: 'PREVIOUSLY COMPLETED DUTY' })
+        if (member.duties === 0)
+          return res.status(404).json({ msg: 'NOT FOUND A STARTED DUTY' });
 
-      duty.update({
-        status: 1,
-        elapsedTime
-      })
+        if (!validPassword(password, member.password))
+          return res.status(401).json({ msg: 'INCORRECT PASSWORD' });
 
-      const member = await Member.findByPk(duty.memberId)
-      if (!member)
-        return res.status(404).json({ msg: 'MEMBER NOT FOUND' })
+        const duty = await Duty.findByPk(member.duties[0].id);
 
-      member.update({
-        isDutyDone: 1
-      })
+        const end = moment();
+        const start = moment(duty.createdAt);
+        const elapsedTime = moment.range(start, end).diff('seconds');
 
-      return res.status(200).json(duty);
+        duty.update({
+          status: 1,
+          elapsedTime
+        })
 
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ msg: 'ERROR WHEN ENDING DUTY' });
+        member.update({
+          isDutyDone: 1
+        })
+
+        return res.status(200).json(duty);
+
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ msg: 'ERROR WHEN ENDING DUTY' });
+      }
+    }
+    else {
+
+      try {
+        const member = await Member.findByPk(req.id, {
+          include: {
+            association: 'duties',
+            where: { status: 0 }
+          }
+        });
+        if (member.duties.length == 0)
+          return res.status(404).json({ msg: 'NOT FOUND A STARTED DUTY' });
+
+        const duty = await Duty.findByPk(member.duties[0].id);
+
+        const end = moment();
+        const start = moment(duty.createdAt);
+        const elapsedTime = moment.range(start, end).diff('seconds');
+
+        duty.update({
+          status: 1,
+          elapsedTime
+        })
+
+        member.update({
+          isDutyDone: 1
+        })
+
+        return res.status(200).json(duty);
+
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ msg: 'ERROR WHEN ENDING DUTY' });
+      }
     }
   },
 
