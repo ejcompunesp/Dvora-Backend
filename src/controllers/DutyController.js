@@ -91,7 +91,6 @@ module.exports = {
         const dutyIfExist = await Duty.findAll({
           where: { memberId: member.id, status: 0 }
         })
-        console.log(dutyIfExist)
         if (dutyIfExist.length)
           return res.status(409).json({ msg: 'PLANTÃO JA INICIADO' })
 
