@@ -111,6 +111,9 @@ module.exports = {
   async store(req, res) {
     const errors = [];
 
+    if (req.level !== 'member')
+      return res.status(401).json({ msg: 'NOT A MEMBER TOKEN' });
+
     const { dutyId } = req.params;
 
     if (!dutyId || dutyId == null || dutyId == undefined)

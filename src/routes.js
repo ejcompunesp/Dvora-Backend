@@ -39,7 +39,7 @@ routes.put("/duties/finish", auth, DutyController.update);
 
 //feedback
 routes.get("/feedback", auth, FeedbackController.index);
-routes.post("/duties/:dutyId/feedback", FeedbackController.store);
+routes.post("/duties/:dutyId/feedback", auth, FeedbackController.store);
 routes.delete("/duties/feedback/delete", auth, FeedbackController.delete);
 routes.put("/duties/feedback/update", auth, FeedbackController.update);
 routes.put("/duties/feedback/monitoring", auth, FeedbackController.updateMonitoring);
