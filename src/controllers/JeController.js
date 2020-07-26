@@ -109,6 +109,8 @@ module.exports = {
 
     if (req.level !== 'je')
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
+    
+    const hash = generateHash(password);
 
     try {
       const je = await Je.findByPk(req.id);
@@ -119,7 +121,7 @@ module.exports = {
             promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
           je.update({
             name: name,
-            password: password,
+            password: hash,
             university: university,
             image: key,
             city: city,
@@ -129,7 +131,7 @@ module.exports = {
         else {
           je.update({
             name: name,
-            password: password,
+            password: hash,
             university: university,
             city: city,
             creationYear: creationYear,
