@@ -16,11 +16,12 @@ module.exports = (req, res, next) => {
   if (!/^Bearer$/i.test(scheme))
     return res.status(401).json({ msg: 'Token malformatted' })
 
-  jwt.verify(token, authConfig.secretMember, (err, decoded) => {
+  jwt.verify(token, authConfig.secret, (err, decoded) => {
     if (err)
       return res.status(401).json({ msg: 'Token invalid' });
 
     req.id = decoded.id;
+    req.level = decoded.level;
     return next();
   })
 };
