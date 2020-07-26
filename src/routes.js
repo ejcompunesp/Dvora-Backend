@@ -47,10 +47,10 @@ routes.get("/duties/feedback/getId", auth, FeedbackController.getId);
 routes.get('/member/:memberId/feedback', FeedbackController.getMemberDuties);
 
 //board
-routes.get("/jes/:jeId/boards", BoardController.index)
-routes.post("/jes/:jeId/boards/register", BoardController.store)
-routes.delete("/jes/:jeId/boards/delete", BoardController.delete)
-routes.put("/jes/:jeId/boards/update", BoardController.update)
+routes.get("/boards", auth, BoardController.index)
+routes.post("/boards/register", auth, BoardController.store)
+routes.delete("/boards/delete", auth, BoardController.delete)
+routes.put("/boards/update", auth, BoardController.update)
 
 
 module.exports = routes;
