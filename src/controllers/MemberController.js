@@ -47,7 +47,6 @@ module.exports = {
         where: { jeId },
         include: { association: 'board' }
       })
-      console.log(members)
       if (members.length == 0)
         return res.status(404).json({ msg: 'NO MEMBER FOUND' })
 
