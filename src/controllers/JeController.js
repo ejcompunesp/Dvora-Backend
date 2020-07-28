@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+const { levelJe } = require('../config/token');
 const authConfig = require('../config/auth');
 
 const { promisify } = require('util');
@@ -78,7 +79,7 @@ module.exports = {
   },
 
   async delete(req, res) {
-    if (req.level !== 'je')
+    if (req.level !== levelJe)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
     try {
       const je = await Je.findByPk(req.id);
@@ -107,9 +108,9 @@ module.exports = {
     if (!creationYear || creationYear == null || creationYear == undefined) errors.push({ msg: 'CREATION YEAR IS INVALID' })
     if (errors.length > 0) return res.status(400).json(errors)
 
-    if (req.level !== 'je')
+    if (req.level !== levelJe)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
-    
+
     const hash = generateHash(password);
 
     try {

@@ -6,6 +6,8 @@ const Moment = require('moment')
 const MomentRange = require('moment-range');
 const moment = MomentRange.extendMoment(Moment);
 
+const { levelJe, levelMember } = require('../config/token');
+
 const bcrypt = require('bcrypt');
 const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 
@@ -73,7 +75,7 @@ module.exports = {
   },
 
   async store(req, res) {
-    if (req.level === 'je') {
+    if (req.level === levelJe) {
 
       const { email, password } = req.body;
       if (!email || email == null || email == undefined || !password || password == null || password == undefined)
@@ -109,7 +111,7 @@ module.exports = {
         return res.status(500).json({ msg: 'ERROR WHEN REGISTERING ON DUTY' });
       }
     }
-    else {
+    else if (req.level === levelMember) {
       try {
         const dutyIfExist = await Duty.findAll({
           where: { memberId: req.id, status: 0 }
@@ -132,10 +134,13 @@ module.exports = {
         return res.status(500).json({ msg: 'ERROR WHEN REGISTERING ON DUTY' });
       }
     }
+    else {
+      return res.status(401).json({ msg: 'TOKEN INVALID' });
+    }
   },
 
   async update(req, res) {
-    if (req.level === 'je') {
+    if (req.level === levelJe) {
       const { id, password } = req.body;
 
       if (!id || id === null || id === undefined || !password || password === null || password === undefined)
@@ -180,7 +185,7 @@ module.exports = {
         return res.status(500).json({ msg: 'ERROR WHEN ENDING DUTY' });
       }
     }
-    else {
+    else if (req.level === levelMember) {
 
       try {
         const member = await Member.findByPk(req.id, {
@@ -213,6 +218,9 @@ module.exports = {
         console.log(error);
         return res.status(500).json({ msg: 'ERROR WHEN ENDING DUTY' });
       }
+    }
+    else {
+      return res.status(401).json({ msg: 'TOKEN INVALID' });
     }
   },
 
