@@ -149,7 +149,6 @@ module.exports = {
     const errors = []
 
     const { id, name, boardId, password, position, sr, isDutyDone } = req.body;
-    if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
     if (!boardId || boardId == null || boardId == undefined) errors.push({ msg: 'BOARD ID IS INVALID' })
     if (!position || position == null || position == undefined) errors.push({ msg: 'POSITION IS INVALID' })
@@ -159,6 +158,10 @@ module.exports = {
     if (req.level !== 'je')
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
+    let hash;
+    if (password)
+      hash = generateHash(password);
+
     try {
       const member = await Member.findByPk(id);
       if (member) {
@@ -166,9 +169,10 @@ module.exports = {
           const { key } = req.file;
           if (member.image)
             promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', member.image));
-          member.update({
+          await member.update({
             name: name,
             boardId: boardId,
+            boardId: hash,
             position: position,
             sr: sr,
             image: key,
@@ -176,9 +180,10 @@ module.exports = {
           });
         }
         else
-          member.update({
+          await member.update({
             name: name,
             boardId: boardId,
+            boardId: hash,
             position: position,
             sr: sr,
             isDutyDone: parseInt(isDutyDone),
