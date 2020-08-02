@@ -102,7 +102,6 @@ module.exports = {
 
     const { password, name, university, city, creationYear } = req.body;
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
-    if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!university || university == null || university == undefined) errors.push({ msg: 'UNIVERSITY IS INVALID' })
     if (!city || city == null || city == undefined) errors.push({ msg: 'CITY IS INVALID' })
     if (!creationYear || creationYear == null || creationYear == undefined) errors.push({ msg: 'CREATION YEAR IS INVALID' })
@@ -111,7 +110,9 @@ module.exports = {
     if (req.level !== JE_LEVEL)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
-    const hash = generateHash(password);
+    let hash;
+    if (password)
+      hash = generateHash(password);
 
     try {
       const je = await Je.findByPk(req.id);
@@ -120,7 +121,7 @@ module.exports = {
           const { key } = req.file;
           if (je.image)
             promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
-          je.update({
+          await je.update({
             name: name,
             password: hash,
             university: university,
@@ -130,7 +131,7 @@ module.exports = {
           });
         }
         else {
-          je.update({
+          await je.update({
             name: name,
             password: hash,
             university: university,

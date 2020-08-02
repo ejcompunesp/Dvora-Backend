@@ -80,7 +80,7 @@ module.exports = {
 
       const board = await Board.findByPk(boardId)
       if (board) {
-        board.update({ name })
+        await board.update({ name })
         return res.status(200).json({ board })
       }
       return res.status(404).json({ msg: 'BOARD NOT FOUND' });

@@ -171,7 +171,7 @@ module.exports = {
       if (!feedback)
         return res.status(404).json({ msg: "FEEDBACK NOT FOUND" });
 
-      feedback.update({
+      await feedback.update({
         isMonitoringDone: 1,
       });
 
@@ -213,7 +213,7 @@ module.exports = {
       if (!feedback)
         return res.status(404).json({ msg: "FEEDBACK NOT FOUND" });
 
-      feedback.update({
+      await feedback.update({
         satisfaction: satisfaction,
         productivity: productivity,
         mood: mood,

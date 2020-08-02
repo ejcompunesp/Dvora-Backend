@@ -169,12 +169,12 @@ module.exports = {
         const start = moment(duty.createdAt);
         const elapsedTime = moment.range(start, end).diff('seconds');
 
-        duty.update({
+        await duty.update({
           status: 1,
           elapsedTime
         })
 
-        member.update({
+        await member.update({
           isDutyDone: 1
         })
 
@@ -203,12 +203,12 @@ module.exports = {
         const start = moment(duty.createdAt);
         const elapsedTime = moment.range(start, end).diff('seconds');
 
-        duty.update({
+        await duty.update({
           status: 1,
           elapsedTime
         })
 
-        member.update({
+        await member.update({
           isDutyDone: 1
         })
 
