@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
-const { levelJe } = require('../config/token');
+const { JE_LEVEL } = require('../config/token');
 const authConfig = require('../config/auth');
 
 const { promisify } = require('util');
@@ -76,7 +76,7 @@ module.exports = {
     if (!sr || sr == null || sr == undefined) errors.push({ msg: 'SR IS INVALID' })
     if (errors.length > 0) return res.status(400).json(errors)
 
-    if (req.level !== levelJe)
+    if (req.level !== JE_LEVEL)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
     try {
@@ -127,7 +127,7 @@ module.exports = {
   async delete(req, res) {
     const { memberId } = req.body
 
-    if (req.level !== levelJe)
+    if (req.level !== JE_LEVEL)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
     try {
@@ -157,7 +157,7 @@ module.exports = {
     if (!sr || sr == null || sr == undefined) errors.push({ msg: 'SR IS INVALID' })
     if (errors.length > 0) return res.status(400).json(errors)
 
-    if (req.level !== levelJe)
+    if (req.level !== JE_LEVEL)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
     try {

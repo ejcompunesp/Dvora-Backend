@@ -2,12 +2,12 @@ const Feedback = require("../models/Feedback");
 const Duty = require("../models/Duty");
 const Member = require("../models/Member");
 
-const { levelJe, levelMember } = require('../config/token');
+const { JE_LEVEL, MEMBER_LEVEL } = require('../config/token');
 
 module.exports = {
   async index(req, res) {
 
-    if (req.level !== levelJe)
+    if (req.level !== JE_LEVEL)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
     const vetMembers = [];
@@ -113,7 +113,7 @@ module.exports = {
   async store(req, res) {
     const errors = [];
 
-    if (req.level !== levelMember)
+    if (req.level !== MEMBER_LEVEL)
       return res.status(401).json({ msg: 'NOT A MEMBER TOKEN' });
 
     const { dutyId } = req.params;
@@ -162,7 +162,7 @@ module.exports = {
   async updateMonitoring(req, res) {
     const { feedbackId } = req.body;
 
-    if (req.level !== levelJe)
+    if (req.level !== JE_LEVEL)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
     try {
@@ -233,7 +233,7 @@ module.exports = {
     if (!feedbackId || feedbackId == null || feedbackId == undefined)
       return res.status(400).json({ msg: "FEEDBACK ID IS INVALID" });
 
-    if (req.level !== levelJe)
+    if (req.level !== JE_LEVEL)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
     try {
@@ -253,7 +253,7 @@ module.exports = {
     if (!feedbackId || feedbackId == null || feedbackId == undefined)
       return res.status(400).json({ msg: "FEEDBACK ID IS INVALID" });
 
-    if (req.level !== levelJe)
+    if (req.level !== JE_LEVEL)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
     try {

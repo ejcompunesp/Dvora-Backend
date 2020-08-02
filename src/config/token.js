@@ -1,4 +1,4 @@
 module.exports = {
-  levelJe: 'je',
-  levelMember: 'member'
+  JE_LEVEL: 'je',
+  MEMBER_LEVEL: 'member'
 }
