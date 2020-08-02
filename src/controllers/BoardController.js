@@ -1,9 +1,11 @@
 const Board = require('../models/Board')
 const Je = require('../models/Je')
 
+const { JE_LEVEL } = require('../config/token');
+
 module.exports = {
   async index(req, res) {
-    if (req.level !== 'je')
+    if (req.level !== JE_LEVEL)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
     try {
       const boards = await Board.findAll({
@@ -22,7 +24,7 @@ module.exports = {
     const { name } = req.body
     if (!name || name == null || name == undefined) return res.status(400).json({ msg: 'BOARD NAME IS INVALID' })
 
-    if (req.level !== 'je')
+    if (req.level !== JE_LEVEL)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' })
 
     try {
@@ -42,7 +44,7 @@ module.exports = {
   },
 
   async delete(req, res) {
-    if (req.level !== 'je')
+    if (req.level !== JE_LEVEL)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' })
 
     const { boardId } = req.body
@@ -66,7 +68,7 @@ module.exports = {
   },
 
   async update(req, res) {
-    if (req.level !== 'je')
+    if (req.level !== JE_LEVEL)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' })
 
     const { boardId, name } = req.body
