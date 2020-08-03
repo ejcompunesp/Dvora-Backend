@@ -2,12 +2,13 @@ const Feedback = require("../models/Feedback");
 const Duty = require("../models/Duty");
 const Member = require("../models/Member");
 
+const { JE_LEVEL, MEMBER_LEVEL } = require('../config/token');
+
 module.exports = {
   async index(req, res) {
-    const { jeId } = req.params;
 
-    if (!jeId || jeId === null || jeId === undefined)
-      return res.status(400).json({ msg: 'JE ID IS INVALID' });
+    if (req.level !== JE_LEVEL)
+      return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
     const vetMembers = [];
     try {
@@ -19,7 +20,7 @@ module.exports = {
       sunday.setSeconds(0);
 
       const members = await Member.findAll({
-        where: { jeId: jeId },
+        where: { jeId: req.id },
         include: [{
           association: 'duties',
           createdAt: { $between: [sunday, now] },
@@ -112,6 +113,9 @@ module.exports = {
   async store(req, res) {
     const errors = [];
 
+    if (req.level !== MEMBER_LEVEL)
+      return res.status(401).json({ msg: 'NOT A MEMBER TOKEN' });
+
     const { dutyId } = req.params;
 
     if (!dutyId || dutyId == null || dutyId == undefined)
@@ -158,13 +162,16 @@ module.exports = {
   async updateMonitoring(req, res) {
     const { feedbackId } = req.body;
 
+    if (req.level !== JE_LEVEL)
+      return res.status(401).json({ msg: 'NOT A JE TOKEN' });
+
     try {
       const feedback = await Feedback.findByPk(feedbackId);
 
       if (!feedback)
         return res.status(404).json({ msg: "FEEDBACK NOT FOUND" });
 
-      feedback.update({
+      await feedback.update({
         isMonitoringDone: 1,
       });
 
@@ -197,13 +204,16 @@ module.exports = {
       errors.push({ msg: "ACTIVITY IS INVALID" });
     if (errors.length > 0) return res.status(400).json(errors);
 
+    if (req.level !== "member")
+      return res.status(401).json({ msg: 'NOT A MEMBER TOKEN' });
+
     try {
       const feedback = await Feedback.findByPk(feedbackId);
 
       if (!feedback)
         return res.status(404).json({ msg: "FEEDBACK NOT FOUND" });
 
-      feedback.update({
+      await feedback.update({
         satisfaction: satisfaction,
         productivity: productivity,
         mood: mood,
@@ -223,6 +233,9 @@ module.exports = {
     if (!feedbackId || feedbackId == null || feedbackId == undefined)
       return res.status(400).json({ msg: "FEEDBACK ID IS INVALID" });
 
+    if (req.level !== JE_LEVEL)
+      return res.status(401).json({ msg: 'NOT A JE TOKEN' });
+
     try {
       const feedback = await Feedback.findByPk(feedbackId);
 
@@ -236,8 +249,12 @@ module.exports = {
 
   async delete(req, res) {
     const { feedbackId } = req.body;
+
     if (!feedbackId || feedbackId == null || feedbackId == undefined)
       return res.status(400).json({ msg: "FEEDBACK ID IS INVALID" });
+
+    if (req.level !== JE_LEVEL)
+      return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
     try {
       const feedback = await Feedback.findByPk(feedbackId);

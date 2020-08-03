@@ -6,10 +6,9 @@ const Moment = require('moment')
 const MomentRange = require('moment-range');
 const moment = MomentRange.extendMoment(Moment);
 
+const { JE_LEVEL, MEMBER_LEVEL } = require('../config/token');
+
 const bcrypt = require('bcrypt');
-const { where } = require('sequelize');
-const sequelize = require('sequelize');
-const { findAll } = require('../models/Duty');
 const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 
 module.exports = {
@@ -36,7 +35,7 @@ module.exports = {
     }
   },
 
-  async consult(req, res) { 
+  async consult(req, res) {
 
     const { jeId } = req.params
     if (!jeId || jeId == null || jeId == undefined)
@@ -47,7 +46,7 @@ module.exports = {
       if (!je) return res.status(404).json({ msg: 'ENTERPRISE NOT FOUND' })
 
       const members = await Member.findAll({
-        where: { 
+        where: {
           jeId
         },
         include: { association: 'duties' }
@@ -57,10 +56,10 @@ module.exports = {
 
       todayDate = moment().format("MMM Do YY")
       const dutiesToday = []
-      for(let member=0; member<members.length; member++) {
-        for (let duty=0; duty<members[member].duties.length; duty++) {
+      for (let member = 0; member < members.length; member++) {
+        for (let duty = 0; duty < members[member].duties.length; duty++) {
           if (todayDate == moment(members[member].duties[duty].createdAt).format("MMM Do YY")) dutiesToday.push({ member: members[member].name, duty: members[member].duties[duty] })
-         
+
         }
       }
       //delete members['duties']
@@ -76,79 +75,152 @@ module.exports = {
   },
 
   async store(req, res) {
-    const { email, password } = req.body;
-    if (!email || email == null || email == undefined || !password || password == null || password == undefined)
-      return res.status(400).json({ msg: 'EMAIL OR PASSWORD IS INVALID' })
+    if (req.level === JE_LEVEL) {
 
-    try {
-      const member = await Member.findOne({
-        where: { email }
-      });
+      const { email, password } = req.body;
+      if (!email || email == null || email == undefined || !password || password == null || password == undefined)
+        return res.status(400).json({ msg: 'EMAIL OR PASSWORD IS INVALID' })
 
-      if (member == null) return res.status(404).json({ msg: 'EMAIL NOT FOUND' })
-      if (!validPassword(password, member.password))
-        return res.status(400).json({ msg: 'INCORRECT PASSWORD' });
+      try {
+        const member = await Member.findOne({
+          where: { email }
+        });
 
-      const dutyIfExist = await Duty.findAll({
-        where: { memberId: member.id, status: 0 }
-      })
-      console.log(dutyIfExist)
-      if (dutyIfExist.length) 
-        return res.status(409).json({ msg: 'PLANTÃO JA INICIADO'})
+        if (member == null) return res.status(404).json({ msg: 'EMAIL NOT FOUND' })
+        if (!validPassword(password, member.password))
+          return res.status(401).json({ msg: 'INCORRECT PASSWORD' });
+
+        const dutyIfExist = await Duty.findAll({
+          where: { memberId: member.id, status: 0 }
+        })
+        if (dutyIfExist.length)
+          return res.status(409).json({ msg: 'PLANTÃO JA INICIADO' })
 
 
-      const duty = await Duty.create({
-        memberId: member.id,
-        status: 0,
-        elapsedTime: 0
-      })
-      member.password = undefined;
-      
-      return res.status(201).json({ member, duty })
+        const duty = await Duty.create({
+          memberId: member.id,
+          status: 0,
+          elapsedTime: 0
+        })
+        member.password = undefined;
 
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ msg: 'ERROR WHEN REGISTERING ON DUTY' });
+        return res.status(200).json({ member, duty })
+
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ msg: 'ERROR WHEN REGISTERING ON DUTY' });
+      }
+    }
+    else if (req.level === MEMBER_LEVEL) {
+      try {
+        const dutyIfExist = await Duty.findAll({
+          where: { memberId: req.id, status: 0 }
+        });
+        if (dutyIfExist.length)
+          return res.status(409).json({ msg: 'DUTY ALREADY STARTED' });
+
+        const duty = await Duty.create({
+          memberId: req.id,
+          status: 0,
+          elapsedTime: 0
+        });
+
+        const member = await Member.findByPk(req.id);
+        member.password = undefined;
+
+        return res.status(200).json({ member, duty });
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ msg: 'ERROR WHEN REGISTERING ON DUTY' });
+      }
+    }
+    else {
+      return res.status(401).json({ msg: 'TOKEN INVALID' });
     }
   },
 
   async update(req, res) {
-    const { dutyId } = req.params;
-    if (dutyId == null)
-      return res.status(400).json({ msg: 'DUTY ID IS INVALID' })
+    if (req.level === JE_LEVEL) {
+      const { id, password } = req.body;
 
-    const dutyAct = await Duty.findByPk(dutyId)
+      if (!id || id === null || id === undefined || !password || password === null || password === undefined)
+        return res.status(400).json({ msg: 'ID OR PASSWORD IS INVALID' });
 
-    const end = moment()
-    const start = moment(dutyAct.createdAt)
-    const elapsedTime = moment.range(start, end).diff('seconds')
+      try {
+        const member = await Member.findByPk(id, {
+          include: {
+            association: 'duties',
+            where: { status: 0 }
+          }
+        });
 
-    try {
-      const duty = await Duty.findByPk(dutyId)
-      if (!duty)
-        return res.status(404).json({ msg: 'NOT FOUND' });
+        if (!member)
+          return res.status(404).json({ msg: 'MEMBER NOT FOUND' });
 
-      if (duty.status) 
-        return res.status(409).json({ msg: 'PREVIOUSLY COMPLETED DUTY' })  
+        if (member.duties === 0)
+          return res.status(404).json({ msg: 'NOT FOUND A STARTED DUTY' });
 
-      duty.update({
-        status: 1,
-        elapsedTime
-      })
+        if (!validPassword(password, member.password))
+          return res.status(401).json({ msg: 'INCORRECT PASSWORD' });
 
-      const member = await Member.findByPk(duty.memberId)
-      if (!member) 
-        return res.status(404).json({ msg: 'MEMBER NOT FOUND' })
+        const duty = await Duty.findByPk(member.duties[0].id);
 
-      member.update({
-        isDutyDone: 1
-      })
+        const end = moment();
+        const start = moment(duty.createdAt);
+        const elapsedTime = moment.range(start, end).diff('seconds');
 
-      return res.status(200).json(duty);
+        await duty.update({
+          status: 1,
+          elapsedTime
+        })
 
-    } catch (error) {
-      console.log(error);
-      return res.status(500).json({ msg: 'ERROR WHEN ENDING DUTY' });
+        await member.update({
+          isDutyDone: 1
+        })
+
+        return res.status(200).json(duty);
+
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ msg: 'ERROR WHEN ENDING DUTY' });
+      }
+    }
+    else if (req.level === MEMBER_LEVEL) {
+
+      try {
+        const member = await Member.findByPk(req.id, {
+          include: {
+            association: 'duties',
+            where: { status: 0 }
+          }
+        });
+        if (member.duties.length == 0)
+          return res.status(404).json({ msg: 'NOT FOUND A STARTED DUTY' });
+
+        const duty = await Duty.findByPk(member.duties[0].id);
+
+        const end = moment();
+        const start = moment(duty.createdAt);
+        const elapsedTime = moment.range(start, end).diff('seconds');
+
+        await duty.update({
+          status: 1,
+          elapsedTime
+        })
+
+        await member.update({
+          isDutyDone: 1
+        })
+
+        return res.status(200).json(duty);
+
+      } catch (error) {
+        console.log(error);
+        return res.status(500).json({ msg: 'ERROR WHEN ENDING DUTY' });
+      }
+    }
+    else {
+      return res.status(401).json({ msg: 'TOKEN INVALID' });
     }
   },
 

@@ -4,13 +4,14 @@ const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+const { JE_LEVEL } = require('../config/token');
 const authConfig = require('../config/auth');
 
 const { promisify } = require('util');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 
-const generateToken = (params = {}) => jwt.sign(params, authConfig.secretMember, {
+const generateToken = (params = {}) => jwt.sign(params, authConfig.secret, {
   expiresIn: 86400, //um dia
 });
 
@@ -67,8 +68,6 @@ module.exports = {
   async store(req, res) {
     const errors = [];
 
-    const { jeId } = req.params;
-    if (!jeId || jeId == null || jeId == undefined) errors.push({ msg: 'JE ID IS INVALID' })
     const { email, password, name, boardId, position, sr } = req.body;
 
     if (!email || email == null || email == undefined) errors.push({ msg: 'EMAIL IS INVALID' })
@@ -77,8 +76,11 @@ module.exports = {
     if (!sr || sr == null || sr == undefined) errors.push({ msg: 'SR IS INVALID' })
     if (errors.length > 0) return res.status(400).json(errors)
 
+    if (req.level !== JE_LEVEL)
+      return res.status(401).json({ msg: 'NOT A JE TOKEN' });
+
     try {
-      const je = await Je.findByPk(jeId);
+      const je = await Je.findByPk(req.id);
 
       if (!je) {
         if (req.file) {
@@ -101,16 +103,16 @@ module.exports = {
 
       if (req.file) {
         const { key } = req.file;
-        const member = await Member.create({ jeId, name, email, password: hash, boardId, position, sr, image: key, isDutyDone: 0 });
+        const member = await Member.create({ jeId: req.id, name, email, password: hash, boardId, position, sr, image: key, isDutyDone: 0 });
         je.password = undefined;
         member.password = undefined;
-        return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
+        return res.status(200).json({ je, member, token: generateToken({ id: member.id, level: 'member' }) });
       }
       else {
-        const member = await Member.create({ jeId, name, email, password: hash, boardId, position, sr, isDutyDone: 0 });
+        const member = await Member.create({ jeId: req.id, name, email, password: hash, boardId, position, sr, isDutyDone: 0 });
         je.password = undefined;
         member.password = undefined;
-        return res.status(200).json({ je, member, token: generateToken({ id: member.id }) });
+        return res.status(200).json({ je, member, token: generateToken({ id: member.id, level: 'member' }) });
       }
     } catch (error) {
       if (req.file) {
@@ -123,12 +125,13 @@ module.exports = {
   },
 
   async delete(req, res) {
-    const { id } = req.body;
-    if (!id || id == null || id == undefined)
-      return res.status(400).json({ msg: 'MEMBER ID IS INVALID' })
+    const { memberId } = req.body
+
+    if (req.level !== JE_LEVEL)
+      return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
     try {
-      const member = await Member.findByPk(id);
+      const member = await Member.findByPk(memberId);
       if (member) {
         if (member.image)
           promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', member.image));
@@ -147,12 +150,18 @@ module.exports = {
     const errors = []
 
     const { id, name, boardId, password, position, sr, isDutyDone } = req.body;
-    if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
     if (!boardId || boardId == null || boardId == undefined) errors.push({ msg: 'BOARD ID IS INVALID' })
     if (!position || position == null || position == undefined) errors.push({ msg: 'POSITION IS INVALID' })
     if (!sr || sr == null || sr == undefined) errors.push({ msg: 'SR IS INVALID' })
     if (errors.length > 0) return res.status(400).json(errors)
+
+    if (req.level !== JE_LEVEL)
+      return res.status(401).json({ msg: 'NOT A JE TOKEN' });
+
+    let hash;
+    if (password)
+      hash = generateHash(password);
 
     try {
       const member = await Member.findByPk(id);
@@ -161,9 +170,10 @@ module.exports = {
           const { key } = req.file;
           if (member.image)
             promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', member.image));
-          member.update({
+          await member.update({
             name: name,
             boardId: boardId,
+            boardId: hash,
             position: position,
             sr: sr,
             image: key,
@@ -171,9 +181,10 @@ module.exports = {
           });
         }
         else
-          member.update({
+          await member.update({
             name: name,
             boardId: boardId,
+            boardId: hash,
             position: position,
             sr: sr,
             isDutyDone: parseInt(isDutyDone),

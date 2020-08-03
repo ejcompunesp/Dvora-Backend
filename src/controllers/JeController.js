@@ -3,13 +3,14 @@ const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
+const { JE_LEVEL } = require('../config/token');
 const authConfig = require('../config/auth');
 
 const { promisify } = require('util');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 
-const generateToken = (params = {}) => jwt.sign(params, authConfig.secretJe, {
+const generateToken = (params = {}) => jwt.sign(params, authConfig.secret, {
   expiresIn: 86400, //um dia
 });
 
@@ -53,19 +54,19 @@ module.exports = {
           const { key } = req.file;
           promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', key));
         }
-        return res.statsu(400).json({ msg: 'EMAIL ALREADY REGISTERED' });
+        return res.status(400).json({ msg: 'EMAIL ALREADY REGISTERED' });
       }
 
       if (req.file) {
         const { key } = req.file;
         const je = await Je.create({ name, email, password: hash, university, image: key, city, creationYear });
         je.password = undefined;
-        return res.status(200).json({ je, token: generateToken({ id: je.id }) });
+        return res.status(200).json({ je, token: generateToken({ id: je.id, level: 'je' }) });
       }
       else {
         const je = await Je.create({ name, email, password: hash, university, city, creationYear });
         je.password = undefined;
-        return res.status(200).json({ je, token: generateToken({ id: je.id }) });
+        return res.status(200).json({ je, token: generateToken({ id: je.id, level: 'je' }) });
       }
     } catch (error) {
       if (req.file) {
@@ -78,12 +79,10 @@ module.exports = {
   },
 
   async delete(req, res) {
-    const { id } = req.body;
-    if (!id || id == null || id == undefined)
-      return res.status(400).json({ msg: 'JE ID IS INVALID' })
-
+    if (req.level !== JE_LEVEL)
+      return res.status(401).json({ msg: 'NOT A JE TOKEN' });
     try {
-      const je = await Je.findByPk(id);
+      const je = await Je.findByPk(req.id);
       if (je) {
         if (je.image)
           promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
@@ -101,24 +100,30 @@ module.exports = {
   async update(req, res) {
     const errors = [];
 
-    const { id, password, name, university, city, creationYear } = req.body;
+    const { password, name, university, city, creationYear } = req.body;
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
-    if (!password || password == null || password == undefined) errors.push({ msg: 'PASSWORD IS INVALID' })
     if (!university || university == null || university == undefined) errors.push({ msg: 'UNIVERSITY IS INVALID' })
     if (!city || city == null || city == undefined) errors.push({ msg: 'CITY IS INVALID' })
     if (!creationYear || creationYear == null || creationYear == undefined) errors.push({ msg: 'CREATION YEAR IS INVALID' })
     if (errors.length > 0) return res.status(400).json(errors)
 
+    if (req.level !== JE_LEVEL)
+      return res.status(401).json({ msg: 'NOT A JE TOKEN' });
+
+    let hash;
+    if (password)
+      hash = generateHash(password);
+
     try {
-      const je = await Je.findByPk(id);
+      const je = await Je.findByPk(req.id);
       if (je) {
         if (req.file) {
           const { key } = req.file;
           if (je.image)
             promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je', je.image));
-          je.update({
+          await je.update({
             name: name,
-            password: password,
+            password: hash,
             university: university,
             image: key,
             city: city,
@@ -126,9 +131,9 @@ module.exports = {
           });
         }
         else {
-          je.update({
+          await je.update({
             name: name,
-            password: password,
+            password: hash,
             university: university,
             city: city,
             creationYear: creationYear,
