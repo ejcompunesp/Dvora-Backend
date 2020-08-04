@@ -194,7 +194,7 @@ module.exports = {
             where: { status: 0 }
           }
         });
-        if (member.duties.length == 0)
+        if (!member.duties)
           return res.status(404).json({ msg: 'NOT FOUND A STARTED DUTY' });
 
         const duty = await Duty.findByPk(member.duties[0].id);
