@@ -99,7 +99,7 @@ module.exports = {
           where: { memberId: member.id, status: 0 }
         })
         if (dutyIfExist.length)
-          return res.status(409).json({ msg: 'PLANTÃO JA INICIADO' })
+          return res.status(409).json({ msg: 'DUTY ALREADY STARTED' })
 
 
         const duty = await Duty.create({
