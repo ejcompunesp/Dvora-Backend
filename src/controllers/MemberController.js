@@ -172,7 +172,7 @@ module.exports = {
           await member.update({
             name: name,
             boardId: boardId,
-            boardId: hash,
+            password: hash,
             position: position,
             sr: sr,
             image: key,
@@ -183,7 +183,7 @@ module.exports = {
           await member.update({
             name: name,
             boardId: boardId,
-            boardId: hash,
+            password: hash,
             position: position,
             sr: sr,
             isDutyDone: parseInt(isDutyDone),
