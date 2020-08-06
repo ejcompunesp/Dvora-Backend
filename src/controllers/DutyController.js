@@ -86,7 +86,12 @@ module.exports = {
           where: { email }
         });
 
-        if (member == null) return res.status(404).json({ msg: 'EMAIL NOT FOUND' })
+        if (!member)
+          return res.status(404).json({ msg: 'EMAIL NOT FOUND' })
+
+        if (member.jeId !== req.id)
+          return res.status(400).json({ msg: 'NOT A MEMBER OF THE LOGGED JE' });
+
         if (!validPassword(password, member.password))
           return res.status(401).json({ msg: 'INCORRECT PASSWORD' });
 
@@ -94,7 +99,7 @@ module.exports = {
           where: { memberId: member.id, status: 0 }
         })
         if (dutyIfExist.length)
-          return res.status(409).json({ msg: 'PLANTÃO JA INICIADO' })
+          return res.status(409).json({ msg: 'DUTY ALREADY STARTED' })
 
 
         const duty = await Duty.create({
@@ -148,8 +153,10 @@ module.exports = {
 
       try {
         const member = await Member.findByPk(id, {
+          where: { jeId: req.id },
           include: {
             association: 'duties',
+            required: false,
             where: { status: 0 }
           }
         });
@@ -157,7 +164,7 @@ module.exports = {
         if (!member)
           return res.status(404).json({ msg: 'MEMBER NOT FOUND' });
 
-        if (member.duties === 0)
+        if (member.duties.length === 0)
           return res.status(404).json({ msg: 'NOT FOUND A STARTED DUTY' });
 
         if (!validPassword(password, member.password))
@@ -189,12 +196,14 @@ module.exports = {
 
       try {
         const member = await Member.findByPk(req.id, {
-          include: {
+          include: [{
             association: 'duties',
+            required: false,
             where: { status: 0 }
-          }
+          }]
         });
-        if (member.duties.length == 0)
+
+        if (member.duties.length === 0)
           return res.status(404).json({ msg: 'NOT FOUND A STARTED DUTY' });
 
         const duty = await Duty.findByPk(member.duties[0].id);
