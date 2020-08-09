@@ -10,6 +10,7 @@ class Member extends Model {
       sr: DataTypes.STRING,
       image: DataTypes.STRING,
       isDutyDone: DataTypes.TINYINT,
+      description: DataTypes.STRING,
     },
       {
         sequelize: connection
@@ -18,7 +19,7 @@ class Member extends Model {
   static associate(models) {
     this.belongsTo(models.Je, { foreignKey: 'jeId', as: 'je' }); //Pertence a uma JE
     this.belongsTo(models.Board, { foreignKey: 'boardId', as: 'board' }); //Pertence a uma Direx
-    this.hasMany(models.Duty, { foreignKey: 'memberId', as: 'duties' }); 
+    this.hasMany(models.Duty, { foreignKey: 'memberId', as: 'duties' });
   }
 }
 
