@@ -4,7 +4,7 @@ module.exports = {
   up: function (queryInterface, Sequelize) {
     return queryInterface.addColumn(
       'Members',
-      'isDutyDone',
+      'description',
       Sequelize.STRING
     );
 
@@ -13,7 +13,7 @@ module.exports = {
   down: function (queryInterface, Sequelize) {
     return queryInterface.removeColumn(
       'Members',
-      'isDutyDone'
+      'description'
     );
   }
 }
