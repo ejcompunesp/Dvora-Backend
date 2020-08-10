@@ -55,5 +55,6 @@ routes.put("/boards/update", auth, BoardController.update)
 
 //profile
 routes.get('/profile/:memberId', auth, ProfileController.profile);
+routes.put('/profile/update', auth, multer(multerMiddleware).single('file'), ProfileController.update);
 
 module.exports = routes;
