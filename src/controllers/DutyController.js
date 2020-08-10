@@ -52,22 +52,24 @@ module.exports = {
         include: { association: 'duties' }
       })
       if (!members.length)
-        return res.status(404).json({ msg: 'NO MEMBERS FOUND' })
+      return res.status(404).json({ msg: 'NO MEMBERS FOUND' })
 
       todayDate = moment().format("MMM Do YY")
-      const dutiesToday = []
+      const JeDuties = []
       for (let member = 0; member < members.length; member++) {
         for (let duty = 0; duty < members[member].duties.length; duty++) {
-          if (todayDate == moment(members[member].duties[duty].createdAt).format("MMM Do YY")) dutiesToday.push({ member: members[member].name, duty: members[member].duties[duty] })
-
+          if (todayDate == moment(members[member].duties[duty].createdAt).format("MMM Do YY")) {
+            JeDuties.push({ member: members[member].name, duty: members[member].duties[duty] })
+          } else if (!members[member].duties[duty].staus) {
+            JeDuties.push({ member: members[member].name, duty: members[member].duties[duty] })
+          }
         }
       }
-      //delete members['duties']
 
-      if (!dutiesToday.length) return res.status(409).json({ msg: 'NO DUTY OPENED TODAY' })
+      if (!JeDuties.length) return res.status(409).json({ msg: 'NO DUTY OPENED TODAY' })
 
-      return res.status(200).json({ dutiesToday })
-
+      return res.status(200).json({ JeDuties })
+      
     } catch (error) {
       console.log(error);
       return res.status(500).json({ msg: 'ERROR WHEN GET DUTIES' })
