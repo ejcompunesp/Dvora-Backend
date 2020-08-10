@@ -10,7 +10,7 @@ var dir;
 const storageTypes = {
   local: multer.diskStorage({
     destination: (req, file, cb) => {
-      if (req.originalUrl.includes('member'))
+      if (req.originalUrl.includes('member') || req.originalUrl.includes('profile'))
         dir = path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member');
       else
         dir = path.resolve(__dirname, '..', '..', 'public', 'uploads', 'je');
