@@ -5,7 +5,7 @@ module.exports = {
     return queryInterface.addColumn(
       'Members',
       'description',
-      Sequelize.STRING
+      Sequelize.TEXT
     );
 
   },

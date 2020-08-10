@@ -10,7 +10,7 @@ class Member extends Model {
       sr: DataTypes.STRING,
       image: DataTypes.STRING,
       isDutyDone: DataTypes.TINYINT,
-      description: DataTypes.STRING,
+      description: DataTypes.TEXT,
     },
       {
         sequelize: connection
