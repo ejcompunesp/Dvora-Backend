@@ -4,10 +4,11 @@ const bcrypt = require('bcrypt');
 const fs = require('fs');
 const path = require('path');
 const jwt = require('jsonwebtoken');
-const { JE_LEVEL } = require('../config/token');
+const { JE_LEVEL, MEMBER_LEVEL } = require('../config/token');
 const authConfig = require('../config/auth');
 
 const { promisify } = require('util');
+const { profile } = require('console');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 
@@ -205,6 +206,36 @@ module.exports = {
       }
       console.log(error);
       return res.status(500).json({ msg: 'MEMBER UPDATE ERROR' });
+    }
+  },
+
+  async profile(req, res) {
+    if (req.level === JE_LEVEL) {
+      const { memberId } = req.params;
+      if (!memberId || memberId === null || memberId === undefined)
+        return res.status(400).json({ msg: 'MEMBER ID IS INVALID' });
+      try {
+        const member = Member.findByPk(memberId, {
+          include: [{
+            association: 'duties',
+          },
+          {
+            association: 'board',
+          }],
+        });
+        if (!member)
+          return res.status(404).json({ msg: 'MEMBER NOT FOUND' });
+        if (member.jeId === req.id)
+          return res.status(401).json({ msg: 'NOT A MEMBER OF THE LOGGED JE' });
+
+        return res.status(200).json({
+          name: member.name,
+          board: member.duties,
+
+        });
+      } catch (error) {
+        return res.status(500).json({ msg: 'ERROR WHEN GETTING MEMBER PROFILE' });
+      }
     }
   },
 };
