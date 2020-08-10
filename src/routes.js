@@ -8,6 +8,7 @@ const MemberController = require("./controllers/MemberController");
 const DutyController = require("./controllers/DutyController");
 const multerMiddleware = require("./middlewares/multer");
 const LoginController = require("./controllers/LoginController");
+const ProfileController = require("./controllers/ProfileController");
 const auth = require("./middlewares/auth");
 
 const routes = express.Router();
@@ -27,7 +28,6 @@ routes.put("/jes/update", auth, multer(multerMiddleware).single("file"), JeContr
 
 //member
 routes.get("/jes/:jeId/members", MemberController.index);
-routes.get("/jes/member/:memberId", auth, MemberController.profile);
 routes.post("/jes/members/signup", auth, multer(multerMiddleware).single("file"), MemberController.store);
 routes.delete("/jes/members/delete", auth, MemberController.delete);
 routes.put("/jes/members/update", auth, multer(multerMiddleware).single("file"), MemberController.update);
@@ -53,5 +53,7 @@ routes.post("/boards/register", auth, BoardController.store)
 routes.delete("/boards/delete", auth, BoardController.delete)
 routes.put("/boards/update", auth, BoardController.update)
 
+//profile
+routes.get('/profile/:memberId', auth, ProfileController.profile);
 
 module.exports = routes;
