@@ -149,7 +149,7 @@ module.exports = {
   async update(req, res) {
     const errors = []
 
-    const { id, name, boardId, password, position, sr, isDutyDone } = req.body;
+    const { id, name, boardId, position, sr, isDutyDone } = req.body;
     if (!name || name == null || name == undefined) errors.push({ msg: 'NAME IS INVALID' })
     if (!boardId || boardId == null || boardId == undefined) errors.push({ msg: 'BOARD ID IS INVALID' })
     if (!position || position == null || position == undefined) errors.push({ msg: 'POSITION IS INVALID' })
@@ -159,51 +159,23 @@ module.exports = {
     if (req.level !== JE_LEVEL)
       return res.status(401).json({ msg: 'NOT A JE TOKEN' });
 
-    let hash;
-    if (password)
-      hash = generateHash(password);
-
     try {
       const member = await Member.findByPk(id);
       if (member) {
-        if (req.file) {
-          const { key } = req.file;
-          if (member.image)
-            promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', member.image));
-          await member.update({
-            name: name,
-            boardId: boardId,
-            boardId: hash,
-            position: position,
-            sr: sr,
-            image: key,
-            isDutyDone: parseInt(isDutyDone),
-          });
-        }
-        else
-          await member.update({
-            name: name,
-            boardId: boardId,
-            boardId: hash,
-            position: position,
-            sr: sr,
-            isDutyDone: parseInt(isDutyDone),
-          });
+        await member.update({
+          name: name,
+          boardId: boardId,
+          boardId: hash,
+          position: position,
+          sr: sr,
+          isDutyDone: parseInt(isDutyDone),
+        });
         member.password = undefined;
         return res.status(200).json(member);
       }
-      else {
-        if (req.file) {
-          const { key } = req.file;
-          promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
-        }
+      else
         return res.status(404).json({ msg: 'NOT FOUND' });
-      }
     } catch (error) {
-      if (req.file) {
-        const { key } = req.file;
-        promisify(fs.unlink)(path.resolve(__dirname, '..', '..', 'public', 'uploads', 'member', key));
-      }
       console.log(error);
       return res.status(500).json({ msg: 'MEMBER UPDATE ERROR' });
     }
