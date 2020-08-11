@@ -8,6 +8,7 @@ const { JE_LEVEL } = require('../config/token');
 const authConfig = require('../config/auth');
 
 const { promisify } = require('util');
+const { profile } = require('console');
 
 const generateHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(8), null);
 

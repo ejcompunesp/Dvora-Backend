@@ -8,6 +8,7 @@ const MemberController = require("./controllers/MemberController");
 const DutyController = require("./controllers/DutyController");
 const multerMiddleware = require("./middlewares/multer");
 const LoginController = require("./controllers/LoginController");
+const ProfileController = require("./controllers/ProfileController");
 const auth = require("./middlewares/auth");
 
 const routes = express.Router();
@@ -52,5 +53,8 @@ routes.post("/boards/register", auth, BoardController.store)
 routes.delete("/boards/delete", auth, BoardController.delete)
 routes.put("/boards/update", auth, BoardController.update)
 
+//profile
+routes.get('/profile/:memberId', auth, ProfileController.profile);
+routes.put('/profile/update', auth, multer(multerMiddleware).single('file'), ProfileController.update);
 
 module.exports = routes;
