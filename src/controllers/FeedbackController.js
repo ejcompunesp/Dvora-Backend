@@ -95,6 +95,7 @@ module.exports = {
       const member = await Member.findByPk(memberId, {
         include: [{
           association: 'duties',
+          order: [['id', 'DESC']],
           include: [{ association: 'feedback' }]
         }]
       });
