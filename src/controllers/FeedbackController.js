@@ -103,6 +103,14 @@ module.exports = {
         return res.status(404).json({ msg: 'MEMBER NOT FOUND' });
 
       member.password = undefined;
+      member.duties.sort((dutyA, dutyB) => {
+        if (dutyA.createdAt > dutyB.createdAt)
+          return -1;
+        else if (dutyA.createdAt < dutyB.createdAt)
+          return 1;
+        else
+          return 0;
+      });
       return res.status(200).json(member);
     } catch (error) {
       console.log(error);
