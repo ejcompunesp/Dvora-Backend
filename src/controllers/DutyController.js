@@ -11,6 +11,8 @@ const { JE_LEVEL, MEMBER_LEVEL } = require('../config/token');
 const bcrypt = require('bcrypt');
 const validPassword = (password, hash) => bcrypt.compareSync(password, hash);
 
+const { Op } = require('sequelize');
+
 module.exports = {
   async index(req, res) {
 
@@ -45,28 +47,52 @@ module.exports = {
       const je = await Je.findByPk(jeId)
       if (!je) return res.status(404).json({ msg: 'ENTERPRISE NOT FOUND' })
 
+      const startToday = new Date();
+      const endToday = new Date();
+
+      startToday.setHours(0);
+      startToday.setMinutes(0);
+      startToday.setSeconds(0);
+
+      endToday.setHours(23);
+      endToday.setMinutes(59);
+      endToday.setSeconds(59);
+
+      console.log(startToday, endToday);
+
       const members = await Member.findAll({
+        attributes: [['name', 'member']],
         where: {
           jeId
         },
-        include: { association: 'duties' }
+        include: {
+          association: 'duties',
+          where: {
+            [Op.or]: [
+              { createdAt: { [Op.between]: [startToday, endToday] } },
+              { status: 0 }
+            ]
+          }
+        }
       })
       if (!members.length)
         return res.status(404).json({ msg: 'NO MEMBERS FOUND' })
 
-      todayDate = moment().format("MMM Do YY")
-      const dutiesToday = []
-      for (let member = 0; member < members.length; member++) {
-        for (let duty = 0; duty < members[member].duties.length; duty++) {
-          if (todayDate == moment(members[member].duties[duty].createdAt).format("MMM Do YY")) dutiesToday.push({ member: members[member].name, duty: members[member].duties[duty] })
+      // todayDate = moment().format("MMM Do YY")
+      // const JeDuties = []
+      // for (let member = 0; member < members.length; member++) {
+      //   for (let duty = 0; duty < members[member].duties.length; duty++) {
+      //     if (todayDate == moment(members[member].duties[duty].createdAt).format("MMM Do YY")) {
+      //       JeDuties.push({ member: members[member].name, duty: members[member].duties[duty] })
+      //     } else if (!members[member].duties[duty].staus) {
+      //       JeDuties.push({ member: members[member].name, duty: members[member].duties[duty] })
+      //     }
+      //   }
+      // }
 
-        }
-      }
-      //delete members['duties']
+      if (!members.length) return res.status(409).json({ msg: 'NO DUTY OPENED TODAY' })
 
-      if (!dutiesToday.length) return res.status(409).json({ msg: 'NO DUTY OPENED TODAY' })
-
-      return res.status(200).json({ dutiesToday })
+      return res.status(200).json({ members })
 
     } catch (error) {
       console.log(error);
