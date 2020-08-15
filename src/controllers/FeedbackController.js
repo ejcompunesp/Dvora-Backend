@@ -113,8 +113,8 @@ module.exports = {
   async store(req, res) {
     const errors = [];
 
-    if (req.level !== MEMBER_LEVEL)
-      return res.status(401).json({ msg: 'NOT A MEMBER TOKEN' });
+    if (req.level !== MEMBER_LEVEL && req.level !== JE_LEVEL)
+      return res.status(401).json({ msg: 'TOKEN INVALID' });
 
     const { dutyId } = req.params;
 
@@ -204,7 +204,7 @@ module.exports = {
       errors.push({ msg: "ACTIVITY IS INVALID" });
     if (errors.length > 0) return res.status(400).json(errors);
 
-    if (req.level !== "member")
+    if (req.level !== MEMBER_LEVEL)
       return res.status(401).json({ msg: 'NOT A MEMBER TOKEN' });
 
     try {
