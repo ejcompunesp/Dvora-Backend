@@ -103,6 +103,14 @@ module.exports = {
         return res.status(404).json({ msg: 'MEMBER NOT FOUND' });
 
       member.password = undefined;
+      member.duties.sort((dutyA, dutyB) => {
+        if (dutyA.createdAt > dutyB.createdAt)
+          return -1;
+        else if (dutyA.createdAt < dutyB.createdAt)
+          return 1;
+        else
+          return 0;
+      });
       return res.status(200).json(member);
     } catch (error) {
       console.log(error);
@@ -113,8 +121,8 @@ module.exports = {
   async store(req, res) {
     const errors = [];
 
-    if (req.level !== MEMBER_LEVEL)
-      return res.status(401).json({ msg: 'NOT A MEMBER TOKEN' });
+    if (req.level !== MEMBER_LEVEL && req.level !== JE_LEVEL)
+      return res.status(401).json({ msg: 'TOKEN INVALID' });
 
     const { dutyId } = req.params;
 
@@ -204,7 +212,7 @@ module.exports = {
       errors.push({ msg: "ACTIVITY IS INVALID" });
     if (errors.length > 0) return res.status(400).json(errors);
 
-    if (req.level !== "member")
+    if (req.level !== MEMBER_LEVEL)
       return res.status(401).json({ msg: 'NOT A MEMBER TOKEN' });
 
     try {
