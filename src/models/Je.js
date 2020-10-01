@@ -12,11 +12,14 @@ class Je extends Model {
       creationYear: DataTypes.STRING,
     },
       {
-        sequelize: connection,
-      })
+        sequelize: connection
+      }
+    )
   }
+
   static associate(models) {
-    this.hasMany(models.Member, { foreignKey: 'jeId', as: 'member' });
+    this.hasMany(models.Member, { foreignKey: 'jeId', as: 'members' });
+    this.hasMany(models.Board, { foreignKey: 'jeId', as: 'boards' })
   }
 }
 

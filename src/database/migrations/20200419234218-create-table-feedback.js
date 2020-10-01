@@ -1,57 +1,57 @@
-'use strict';
+"use strict";
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Jes', {
+    return queryInterface.createTable("Feedbacks", {
       id: {
         type: Sequelize.INTEGER,
         primaryKey: true,
         autoIncrement: true,
         allowNull: false,
       },
-      name: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      email: {
-        type: Sequelize.STRING,
-        allowNull: false,
-        unique: true,
-      },
-      password: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
-      university: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      image: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      city: {
-        type: Sequelize.STRING,
-        allowNull: true,
-      },
-      creationYear: {
+      dutyId: {
         type: Sequelize.INTEGER,
+        allowNull: false,
+        references: { model: "Duties", key: "id" },
+        onUpdate: "CASCADE",
+        onDelete: "CASCADE",
+      },
+      satisfaction: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      productivity: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      mood: {
+        type: Sequelize.INTEGER,
+        allowNull: false,
+      },
+      note: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      activity: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      monitoring: {
+        type: Sequelize.STRING,
         allowNull: true,
       },
       createdAt: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: new Date()
       },
       updatedAt: {
         type: Sequelize.DATE,
         allowNull: false,
-        defaultValue: new Date()
-      }
+      },
     });
   },
 
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Jes');
-  }
+    return queryInterface.dropTable("Feedbacks");
+  },
 };
