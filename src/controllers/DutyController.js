@@ -58,10 +58,8 @@ module.exports = {
       endToday.setMinutes(59);
       endToday.setSeconds(59);
 
-      console.log(startToday, endToday);
-
       const members = await Member.findAll({
-        attributes: [['name', 'member']],
+        attributes: ['name'],
         where: {
           jeId
         },
@@ -74,9 +72,18 @@ module.exports = {
             ]
           }
         }
-      })
-      
-      return res.status(200).json({ members })
+      });
+
+      const dutiesToday = [];
+      members.forEach(member => {
+        for (let i = 0; i < member.duties.length; i++)
+          dutiesToday.push({ member: member.name, duty: member.duties[i] });
+      });
+
+      if (dutiesToday.length === 0)
+        return res.status(404).json({ msg: 'NOT FOUND' });
+
+      return res.status(200).json({ dutiesToday });
 
     } catch (error) {
       console.log(error);
