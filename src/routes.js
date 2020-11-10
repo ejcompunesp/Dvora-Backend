@@ -13,7 +13,7 @@ const auth = require("./middlewares/auth");
 const routes = express.Router();
 
 routes.get("/", (req, res) => {
-  res.json({ ok: true });
+  res.json({ ok: false });
 });
 
 //login

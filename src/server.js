@@ -15,6 +15,8 @@ app.use('/files', express.static(path.resolve(__dirname, '..', 'public', 'upload
 
 app.use(routes);
 
-app.listen(process.env.PORT || 3333, () => {
-  console.log('Servidor NodeJS Rodando');
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log('Servidor NodeJS Rodando na porta: ' + PORT );
 });

@@ -5,8 +5,10 @@
   "main": "./src/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon src/server.js",
-    "start": "node src/server.js"
+    "dev": "sequelize db:create && sequelize db:migrate && nodemon src/server.js",
+    "start": "node src/server.js",
+    "create": "sequelize db:create",
+    "migrate": "sequelize db:migrate"
   },
   "author": "",
   "license": "ISC",
