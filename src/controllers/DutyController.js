@@ -250,4 +250,26 @@ module.exports = {
     }
   },
 
+  async delete(req, res) {
+    const { dutyId } = req.body
+
+    if (!dutyId || dutyId == null || dutyId == undefined)
+      return res.status(400).json({ msg: 'DUTY ID IS INVALID' })
+
+    if (req.level !== JE_LEVEL)
+      return res.status(401).json({ msg: 'NOT A JE TOKEN' })
+
+    try {
+      const duty = await Duty.findByPk(dutyId)
+      if (duty){
+        duty.destroy()
+        return res.status(200).json({ msg: 'DUTY DELETED SUCCESSFULLY' })
+      }
+      return res.status(404).json({ msg: 'DUTY NOT FOUND' })
+    } catch (error) {
+      console.log(error);
+      return res.status(500).json({ msg: 'ERROR WHEN DELETE DUTIES' })
+    } 
+  }
+
 };
